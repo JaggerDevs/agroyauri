@@ -515,6 +515,33 @@ ul { margin: 0; padding: 0; list-style: none; }
   .photo-stack { padding: 0 0 30px 24px; }
 }
 
+/* ---------- Botón flotante WhatsApp ---------- */
+.wa-float {
+  position: fixed; right: 22px; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); z-index: 90;
+  width: 60px; height: 60px; border-radius: 50%;
+  background: #25d366; color: #fff; display: grid; place-items: center;
+  box-shadow: 0 10px 24px -6px rgba(0,0,0,.35);
+  transition: transform .2s, box-shadow .2s;
+}
+.wa-float svg { width: 34px; height: 34px; }
+.wa-float::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: #25d366; z-index: -1; animation: waPulse 2.4s ease-out infinite;
+}
+@keyframes waPulse { 0% { transform: scale(1); opacity: .55; } 100% { transform: scale(1.6); opacity: 0; } }
+.wa-float:hover { transform: scale(1.07); box-shadow: 0 14px 28px -6px rgba(0,0,0,.4); }
+.wa-float-label {
+  position: absolute; right: calc(100% + 12px); top: 50%; transform: translateY(-50%);
+  background: #fff; color: var(--forest-800); font-size: 13px; font-weight: 600; white-space: nowrap;
+  padding: 7px 14px; border-radius: 999px; box-shadow: 0 6px 18px -6px rgba(0,0,0,.3);
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.wa-float:hover .wa-float-label, .wa-float:focus-visible .wa-float-label { opacity: 1; }
+@media (max-width: 760px) {
+  .wa-float { right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 54px; height: 54px; }
+  .wa-float svg { width: 30px; height: 30px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
