@@ -53,7 +53,7 @@ const groups = [
                     {!p.available && <span class="tag off">Agotado</span>}
                   </div>
                   {p.description && <p>{p.description}</p>}
-                  <a href={waLink(settings, waProductText(p.name))} class="btn btn-dark" target="_blank" rel="noopener" data-wa><svg viewBox="0 0 24 24" class="ico"><use href="#i-wa" /></svg>Consultar por WhatsApp</a>
+                  <a href={waLink(settings, waProductText(p.name))} class="btn btn-dark" target="_blank" rel="noopener" data-wa><svg viewBox="0 0 24 24" class="ico"><use href="#i-wa" /></svg>Consultar<span class="hide-sm">&nbsp;por WhatsApp</span></a>
                 </div>
               </article>
             ))}

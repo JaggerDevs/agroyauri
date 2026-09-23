@@ -104,12 +104,15 @@
   .detail-aside { position: static; }
 }
 @media (max-width: 760px) {
+  .hide-sm { display: none; }
   .cards-grid, .blog-grid { grid-template-columns: 1fr; }
   .projects-grid, .product-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
   .gallery-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
   .before-after { grid-template-columns: 1fr; }
   .product-card .body { padding: 12px 12px 14px; }
   .product-card h3 { font-size: 14.5px; }
+  .product-card .btn { font-size: 12.5px; padding: 9px 8px; gap: 6px; }
+  .product-card .btn .ico { width: 15px; height: 15px; }
   .notfound { padding: 120px 0 60px; }
 }
 
