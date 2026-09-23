@@ -35,3 +35,11 @@
 - Heredocs grandes en Bash con comillas simples/`$` fallan: usar la herramienta Write.
 - `.section h2` aplica estilo de título con línea verde a TODO h2 dentro de secciones: para h2 de tarjetas usar clases `card-h`, `post-title`, `aside-title`, `empty-title`, `cat-title` (overrides en `src/styles/pages.css`).
 - Pattern HTML con flag v: escapar `( ) -` dentro de clases.
+
+## Continuar en otra PC
+1. `git clone https://github.com/neechan15/agroyauri.git && cd agroyauri && git checkout v2`
+2. `npm install` (Node 22+). Si npm bloquea scripts: `npm approve-scripts esbuild workerd sharp`.
+3. `npm run dev` (sin .env usa src/data/seed.json) · `npm run build` · `npm run test:db`.
+4. NO están en git (copiar a mano si se necesitan): `documentos/` (brochure), `referencias/`, `assets/` originales, `.env`, `.dev.vars`.
+5. Para el emulador local: descargar PostgREST (Windows: zip v16.3 de GitHub releases) y copiar `libpq.dll` del wheel `psycopg-binary` junto al exe como `LIBPQ.dll`.
+6. Siguiente paso real: `npx supabase login` → crear proyecto (región sa-east-1) → aplicar migración + seed → crear admin → Cloudflare Pages (conectar Git en el dashboard, variables, deploy hook). Ver docs/.
