@@ -24,6 +24,7 @@ const remote = typeof image === "string";
     widths={widths}
     sizes={sizes}
     formats={["avif", "webp"]}
+    fallbackFormat="jpg"
     loading={loading}
     decoding={loading === "eager" ? "sync" : "async"}
     fetchpriority={fetchpriority}

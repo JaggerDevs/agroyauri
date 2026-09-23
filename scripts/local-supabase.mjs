@@ -20,6 +20,7 @@ const API_PORT = 54321, PG_PORT = 54329, PGRST_PORT = 54330;
 const SECRET = "local-only-jwt-secret-do-not-use-in-production-000";
 const STORAGE_DIR = join(tmpdir(), "agroyauri-local-storage");
 const BIN = process.env.POSTGREST_BIN;
+const hookCalls = [];
 if (!BIN) throw new Error("Define POSTGREST_BIN con la ruta a postgrest(.exe)");
 
 // ---------- JWT HS256 ----------
@@ -102,7 +103,7 @@ async function isAdmin(token) {
 
 createServer(async (req, res) => {
   try {
-    if (req.method === "OPTIONS") return send(res, 204, "");
+    if (req.method === "OPTIONS") return send(res, 204, "", { "Access-Control-Allow-Headers": req.headers["access-control-request-headers"] || cors["Access-Control-Allow-Headers"] });
     const url = new URL(req.url, `http://${req.headers.host}`);
 
     // ---- REST → PostgREST ----
@@ -114,7 +115,7 @@ createServer(async (req, res) => {
       const r = await fetch(`http://127.0.0.1:${PGRST_PORT}${url.pathname.slice(8) || "/"}${url.search}`, { method: req.method, headers, body });
       const out = Buffer.from(await r.arrayBuffer());
       const h = { ...cors };
-      r.headers.forEach((v, k) => { if (!["content-encoding", "transfer-encoding", "connection"].includes(k)) h[k] = v; });
+      r.headers.forEach((v, k) => { if (!["content-encoding", "transfer-encoding", "connection"].includes(k) && !k.startsWith("access-control-")) h[k] = v; });
       res.writeHead(r.status, h);
       return res.end(out);
     }
@@ -151,7 +152,15 @@ createServer(async (req, res) => {
     if (obj && ["POST", "PUT"].includes(req.method)) {
       const token = bearer(req);
       if (!["projects", "products", "blog"].includes(obj[1]) || !(await isAdmin(token))) return send(res, 403, { statusCode: "403", error: "Unauthorized", message: "new row violates row-level security policy" });
-      const data = await readBody(req);
+      let data = await readBody(req);
+      // supabase-js envía multipart/form-data: extraer el archivo (Supabase real lo hace igual)
+      const m = /boundary=(.+)$/.exec(req.headers["content-type"] || "");
+      if (m) {
+        const boundary = Buffer.from(`--${m[1]}`);
+        const start = data.indexOf("\r\n\r\n", Math.max(0, data.indexOf("filename="))) + 4;
+        const end = data.indexOf(boundary, start) - 2;
+        data = data.subarray(start, end);
+      }
       if (data.length > 5 * 1024 * 1024) return send(res, 413, { error: "Payload too large" });
       const f = join(STORAGE_DIR, obj[1], decodeURIComponent(obj[2]));
       mkdirSync(dirname(f), { recursive: true });
@@ -165,6 +174,13 @@ createServer(async (req, res) => {
       for (const p of prefixes) rmSync(join(STORAGE_DIR, del[1], p), { force: true });
       return send(res, 200, prefixes.map((name) => ({ name })));
     }
+
+    // ---- deploy hook simulado (Cloudflare) ----
+    if (url.pathname === "/__deploy-hook" && req.method === "POST") {
+      hookCalls.push(new Date().toISOString());
+      return send(res, 200, { id: `local-${hookCalls.length}` });
+    }
+    if (url.pathname === "/__deploy-hook/calls") return send(res, 200, hookCalls);
 
     send(res, 404, { error: `No emulado: ${req.method} ${url.pathname}` });
   } catch (e) {

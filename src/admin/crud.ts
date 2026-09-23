@@ -125,7 +125,7 @@ type Getter = () => unknown;
 export async function renderForm(root: HTMLElement, e: Entity, id: string | "new") {
   clear(root).append(loading());
   const isNew = id === "new";
-  const cols = ["id", ...new Set(e.fields.map((f) => f.name))].join(", ");
+  const cols = ["id", "updated_at", ...new Set(e.fields.map((f) => f.name))].join(", ");
   let row: any = {};
   if (!isNew) {
     const { data, error } = await sb!.from(e.table).select(cols).eq("id", id).maybeSingle();
