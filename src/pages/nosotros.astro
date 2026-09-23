@@ -12,7 +12,7 @@ const crumbs = [{ name: "Inicio", path: "/" }, { name: "Nosotros", path: "/nosot
 const clients = [...new Set(projects.map((p) => p.client).filter(Boolean))] as string[];
 ---
 <Base
-  title="Nosotros: Empresa de Áreas Verdes y Saneamiento Ambiental | AGROYAURI SAC"
+  title="Nosotros: Áreas Verdes y Saneamiento Ambiental | AGROYAURI SAC"
   description="Agroyauri S.A.C. brinda soluciones integrales en áreas verdes y saneamiento ambiental en Lima. Conoce nuestra misión, visión, valores y proyectos realizados."
   path="/nosotros"
   jsonLd={[organization(settings, Astro.site!), breadcrumbs(Astro.site!, crumbs)]}

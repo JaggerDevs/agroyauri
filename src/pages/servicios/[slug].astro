@@ -5,7 +5,7 @@ import ProjectCard from "../../components/ProjectCard.astro";
 import ContactSection from "../../components/ContactSection.astro";
 import { getSiteData, type Service } from "../../lib/data";
 import { breadcrumbs, service as serviceLd } from "../../lib/schema";
-import { md, servicePrice, waLink, waServiceText, truncate } from "../../lib/site";
+import { md, servicePrice, waLink, waServiceText, truncate, seoTitle, seoDescription } from "../../lib/site";
 
 export async function getStaticPaths() {
   const { services } = await getSiteData();
@@ -20,8 +20,8 @@ const price = servicePrice(s);
 const waText = waServiceText(s.name);
 const path = `/servicios/${s.slug}`;
 const crumbs = [{ name: "Inicio", path: "/" }, { name: "Servicios", path: "/servicios" }, { name: s.name, path }];
-const title = s.seo_title || `${s.name} en Lima | AGROYAURI SAC`;
-const description = s.seo_description || truncate(s.short_description || s.name, 160);
+const title = s.seo_title || seoTitle(`${s.name} en Lima`);
+const description = s.seo_description || seoDescription([s.short_description, `Servicio de ${s.name.toLowerCase()} en Lima por AGROYAURI SAC. Solicita tu cotización.`]);
 ---
 <Base
   title={title}

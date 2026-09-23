@@ -7,7 +7,7 @@ import CtaFinal from "../../components/CtaFinal.astro";
 import { getImage } from "astro:assets";
 import { getSiteData, type Project } from "../../lib/data";
 import { breadcrumbs, projectPage } from "../../lib/schema";
-import { md, truncate, waLink, waServiceText } from "../../lib/site";
+import { md, truncate, waLink, waServiceText, seoTitle, seoDescription } from "../../lib/site";
 import { resolveImage } from "../../lib/media";
 
 export async function getStaticPaths() {
@@ -21,8 +21,12 @@ const svc = services.find((s) => s.id === p.service_id);
 const path = `/proyectos/${p.slug}`;
 const crumbs = [{ name: "Inicio", path: "/" }, { name: "Proyectos", path: "/proyectos" }, { name: p.title, path }];
 const where = [p.client, p.location].filter(Boolean).join(" – ");
-const title = p.seo_title || `${p.title}${where ? ` – ${where}` : ""} | AGROYAURI SAC`;
-const description = p.seo_description || truncate(p.short_description || p.description || p.title, 160);
+// "Urb. La Planicie – La Molina" → "La Molina" (el distrito es lo que se busca en Google)
+const district = p.location?.includes("–") ? p.location.split("–").pop()!.trim() : null;
+const title =
+  p.seo_title ||
+  seoTitle(district ? `${p.title} en ${district}` : p.client ? `${p.title} – ${p.client}` : p.location ? `${p.title} en ${p.location}` : p.title);
+const description = p.seo_description || seoDescription([p.short_description, svc && `Proyecto de ${svc.name.toLowerCase()} realizado por AGROYAURI SAC.`, p.description && truncate(p.description.replace(/[#*_>\[\]()-]/g, ""), 150)]);
 
 // Galería: sin repetir antes/después; enlace a una versión grande optimizada.
 const gallerySrc = p.gallery.filter((g) => g !== p.before_image && g !== p.after_image);

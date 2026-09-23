@@ -5,7 +5,7 @@ import Img from "../../components/Img.astro";
 import CtaFinal from "../../components/CtaFinal.astro";
 import { getSiteData, type BlogPost } from "../../lib/data";
 import { article, breadcrumbs } from "../../lib/schema";
-import { md, truncate } from "../../lib/site";
+import { md, truncate, seoTitle, seoDescription } from "../../lib/site";
 
 export async function getStaticPaths() {
   const { posts } = await getSiteData();
@@ -20,8 +20,8 @@ const fmt = new Intl.DateTimeFormat("es-PE", { dateStyle: "long", timeZone: "Ame
 const meta = [p.published_at && fmt.format(new Date(p.published_at)), p.author].filter(Boolean).join(" · ");
 ---
 <Base
-  title={p.seo_title || `${p.title} | AGROYAURI SAC`}
-  description={p.seo_description || truncate(p.excerpt || p.title, 160)}
+  title={p.seo_title || seoTitle(p.title)}
+  description={p.seo_description || seoDescription([p.excerpt, p.content && truncate(p.content.replace(/[#*_>\[\]()-]/g, "").replace(/\s+/g, " "), 150)])}
   path={path}
   image={p.featured_image}
   type="article"

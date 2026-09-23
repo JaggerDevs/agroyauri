@@ -44,3 +44,23 @@ export function md(src: string | null | undefined): string {
 export const telHref = (phone: string) => `tel:+51${phone.replace(/\D/g, "")}`;
 
 export const truncate = (s: string, n: number) => (s.length <= n ? s : s.slice(0, n - 1).trimEnd() + "…");
+
+/** Título SEO ≤ 70 caracteres: agrega la marca si cabe; si no, recorta sin cortar palabras. */
+export function seoTitle(base: string, max = 70): string {
+  for (const suffix of [" | AGROYAURI SAC", " | Agroyauri"]) if ((base + suffix).length <= max) return base + suffix;
+  const cut = base.slice(0, max - 13).replace(/\s+\S*$/, "");
+  return `${cut} | Agroyauri`;
+}
+
+/** Descripción SEO de 50–160 caracteres a partir de los textos disponibles. */
+export function seoDescription(parts: (string | null | undefined)[], max = 160): string {
+  let out = "";
+  for (const p of parts) {
+    if (!p) continue;
+    const next = out ? `${out} ${p}` : p;
+    if (next.length > max) break;
+    out = next;
+    if (out.length >= 110) break;
+  }
+  return out || truncate(parts.filter(Boolean).join(" "), max);
+}
