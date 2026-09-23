@@ -1,0 +1,23 @@
+---
+import Base from "../layouts/Base.astro";
+import ContactSection from "../components/ContactSection.astro";
+import { getSiteData } from "../lib/data";
+import { breadcrumbs, organization } from "../lib/schema";
+
+const { settings, services } = await getSiteData();
+const crumbs = [{ name: "Inicio", path: "/" }, { name: "Contacto", path: "/contacto" }];
+---
+<Base
+  title="Contacto y Cotizaciones | AGROYAURI SAC – Pachacamac, Lima"
+  description="Solicita una cotización para paisajismo, mantenimiento de áreas verdes, riego tecnificado o control de plagas. Escríbenos por WhatsApp al 931-637-047 o completa el formulario."
+  path="/contacto"
+  jsonLd={[organization(settings, Astro.site!), breadcrumbs(Astro.site!, crumbs)]}
+>
+  <div class="contact-page">
+    <ContactSection settings={settings} services={services} as="h1" title="Hagamos realidad<br>tu próximo proyecto" />
+  </div>
+</Base>
+
+<style>
+  .contact-page :global(.contact) { padding-top: 120px; min-height: 100vh; }
+</style>

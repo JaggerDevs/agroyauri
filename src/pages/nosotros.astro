@@ -1,0 +1,141 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import Img from "../components/Img.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import CtaFinal from "../components/CtaFinal.astro";
+import { getSiteData } from "../lib/data";
+import { breadcrumbs, organization } from "../lib/schema";
+
+const { settings, services, projects } = await getSiteData();
+const crumbs = [{ name: "Inicio", path: "/" }, { name: "Nosotros", path: "/nosotros" }];
+const clients = [...new Set(projects.map((p) => p.client).filter(Boolean))] as string[];
+---
+<Base
+  title="Nosotros: Empresa de Áreas Verdes y Saneamiento Ambiental | AGROYAURI SAC"
+  description="Agroyauri S.A.C. brinda soluciones integrales en áreas verdes y saneamiento ambiental en Lima. Conoce nuestra misión, visión, valores y proyectos realizados."
+  path="/nosotros"
+  jsonLd={[organization(settings, Astro.site!), breadcrumbs(Astro.site!, crumbs)]}
+>
+  <PageHero
+    eyebrow="Nosotros"
+    title={'Espacios que<br>transforman <span class="lime">entornos</span>'}
+    lead="Soluciones integrales en áreas verdes y saneamiento ambiental, combinando experiencia, calidad y sostenibilidad."
+    image="/media/site/jardin-casa.jpg"
+    crumbs={crumbs}
+  />
+
+  <section class="section" id="quienes-somos">
+    <div class="container about-intro">
+      <div class="text">
+        <p class="eyebrow">Quiénes somos</p>
+        <h2>AGROYAURI SAC</h2>
+        <p><strong>Agroyauri S.A.C.</strong> brinda soluciones integrales en áreas verdes y saneamiento ambiental, combinando experiencia, calidad y sostenibilidad.</p>
+        <p>Diseñamos, implementamos y mantenemos espacios que transforman entornos, desde jardines y sistemas de riego tecnificado hasta el control eficiente de plagas. Además, ofrecemos insumos agrícolas y plantas ornamentales de alta calidad para garantizar resultados duraderos.</p>
+        <p>Nos comprometemos a crear espacios saludables, productivos y visualmente atractivos, adaptándonos a cada cliente con soluciones eficientes y responsables.</p>
+      </div>
+      <div class="photo-stack">
+        <Img src="/media/site/trabajo-exterior.jpg" alt="Área verde con terraza y piscina mantenida por Agroyauri" class="main" widths={[480, 720, 960]} sizes="(max-width: 980px) 90vw, 560px" />
+        <Img src="/media/site/equipo-empresa.jpg" alt="Equipo de Agroyauri en visita a una planta de productos biológicos" class="small" widths={[240, 400]} sizes="240px" style="object-position:50% 40%" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section presentation">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Presentación de empresa</p>
+          <h2>Lo que hacemos</h2>
+        </div>
+      </div>
+      <div class="pres-grid">
+        <div class="pres-item">
+          <svg viewBox="0 0 24 24"><use href="#i-leaf" /></svg>
+          <h3>Diseñamos e implementamos</h3>
+          <p>Paisajismo, jardines y sistemas de riego tecnificado pensados para cada espacio y cada cliente.</p>
+        </div>
+        <div class="pres-item">
+          <svg viewBox="0 0 64 64"><use href="#i-gear" /></svg>
+          <h3>Mantenemos y protegemos</h3>
+          <p>Mantenimiento de áreas verdes, fumigación, control eficiente de plagas y saneamiento ambiental.</p>
+        </div>
+        <div class="pres-item">
+          <svg viewBox="0 0 24 24"><use href="#i-globe" /></svg>
+          <h3>Abastecemos</h3>
+          <p>Insumos agrícolas, fertilizantes, plaguicidas y plantas ornamentales de alta calidad.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="mision-vision">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Nuestro propósito</p>
+          <h2>Misión y visión</h2>
+        </div>
+      </div>
+      <div class="mv-grid">
+        <article class="mv-card">
+          <Img src="/media/services/plantas.jpg" alt="Palmera y plantas ornamentales en un jardín" widths={[480, 800]} sizes="(max-width: 760px) 90vw, 600px" />
+          <div class="body">
+            <h3><svg viewBox="0 0 64 64"><use href="#i-leaf-solid" /></svg>Misión</h3>
+            <p>Brindar servicios integrales en mantenimiento de áreas verdes, saneamiento ambiental y comercialización de insumos agrícolas, ofreciendo soluciones eficientes, sostenibles y de alta calidad.</p>
+            <p>En Agroyauri trabajamos comprometidos con la satisfacción de nuestros clientes, el cuidado del medio ambiente y la creación de espacios saludables, productivos y estéticamente atractivos.</p>
+          </div>
+        </article>
+        <article class="mv-card">
+          <Img src="/media/site/jardin-casa.jpg" alt="Jardín amplio frente a una casa" widths={[480, 800]} sizes="(max-width: 760px) 90vw, 600px" style="object-position:50% 60%" />
+          <div class="body">
+            <h3><svg viewBox="0 0 24 24"><use href="#i-globe" /></svg>Visión</h3>
+            <p>Ser una empresa líder a nivel nacional en servicios de paisajismo, mantenimiento de áreas verdes, fumigación y soluciones agrícolas, reconocida por su innovación, responsabilidad ambiental y excelencia operativa.</p>
+            <p>Buscamos consolidarnos como una opción confiable en el sector público y privado, participando en proyectos y licitaciones de gran envergadura a nivel nacional.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section values" id="valores">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Lo que nos guía</p>
+          <h2>Nuestros valores</h2>
+        </div>
+      </div>
+      <div class="values-grid">
+        <div class="value"><span class="num">01</span><h3>Calidad</h3><p>Resultados duraderos con insumos y plantas de alta calidad.</p></div>
+        <div class="value"><span class="num">02</span><h3>Sostenibilidad</h3><p>Cuidamos el medio ambiente y el uso eficiente del agua.</p></div>
+        <div class="value"><span class="num">03</span><h3>Compromiso</h3><p>La satisfacción de nuestros clientes guía cada proyecto.</p></div>
+        <div class="value"><span class="num">04</span><h3>Responsabilidad</h3><p>Soluciones eficientes y responsables, adaptadas a cada cliente.</p></div>
+        <div class="value"><span class="num">05</span><h3>Innovación</h3><p>Riego tecnificado y métodos modernos de mantenimiento.</p></div>
+        <div class="value"><span class="num">06</span><h3>Excelencia operativa</h3><p>Trabajo ordenado, seguro y con seguimiento en cada etapa.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section projects" id="proyectos">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Experiencia</p>
+          <h2>Proyectos realizados</h2>
+        </div>
+        <a href="/proyectos" class="link-more">Ver todos los proyectos <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
+      </div>
+      <div class="gallery">
+        {projects.slice(0, 8).map((p) => <ProjectCard project={p} services={services} sizes="(max-width: 760px) 45vw, (max-width: 980px) 30vw, 300px" />)}
+      </div>
+      {clients.length > 0 && (
+        <div class="clients" aria-label="Clientes">
+          {clients.map((c) => <span>{c}</span>)}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <CtaFinal settings={settings} />
+</Base>

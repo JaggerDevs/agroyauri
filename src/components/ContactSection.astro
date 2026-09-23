@@ -1,0 +1,28 @@
+---
+import LeadForm from "./LeadForm.astro";
+import type { Service, Settings } from "../lib/data";
+import { waLink, waGeneralText } from "../lib/site";
+interface Props { settings: Settings; services: Service[]; selected?: string; title?: string; as?: "h1" | "h2" }
+const { settings, services, selected, title = "Hagamos realidad<br>tu próximo proyecto", as = "h2" } = Astro.props;
+const c = settings.contact;
+const H = as;
+---
+<section class="section contact" id="contacto">
+  <div class="container contact-grid">
+    <div class="contact-info">
+      <p class="eyebrow eyebrow-light">Contáctanos</p>
+      <H class="section-title" set:html={title} />
+      <p class="contact-lead">Cuéntanos sobre tu proyecto y recibe una asesoría personalizada. Nuestro equipo está listo para ayudarte.</p>
+      <ul class="contact-list">
+        <li><svg viewBox="0 0 24 24"><use href="#i-wa" /></svg>
+          {c.phones.map((p, i) => (<>{i > 0 && <>&nbsp;/&nbsp;</>}<a href={`https://wa.me/51${p.replace(/\D/g, "")}?text=${encodeURIComponent(waGeneralText)}`} target="_blank" rel="noopener" data-wa>{p}</a></>))}
+        </li>
+        <li><svg viewBox="0 0 24 24"><use href="#i-mail" /></svg><a href={`mailto:${c.email}`}>{c.email}</a></li>
+        <li><svg viewBox="0 0 24 24"><use href="#i-pin" /></svg><span>{c.city} - {c.region}</span></li>
+        <li><svg viewBox="0 0 24 24"><use href="#i-doc" /></svg><span>RUC: {c.ruc}</span></li>
+      </ul>
+      <p class="contact-script" aria-hidden="true"><svg viewBox="0 0 40 40"><use href="#i-leaf-line" /></svg>Más vida<br />en cada espacio</p>
+    </div>
+    <LeadForm services={services} settings={settings} selected={selected} />
+  </div>
+</section>

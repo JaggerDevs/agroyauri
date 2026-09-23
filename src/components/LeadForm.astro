@@ -1,0 +1,53 @@
+---
+// Formulario de cotización (diseño aprobado). Envía a /api/lead (Cloudflare Function).
+import type { Service, Settings } from "../lib/data";
+interface Props {
+  services: Service[];
+  settings: Settings;
+  /** id del servicio preseleccionado (páginas de servicio). */
+  selected?: string;
+  id?: string;
+}
+const { services, settings, selected, id = "quoteForm" } = Astro.props;
+const plans = settings.plans.items.map((p) => p.name);
+const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+---
+<form class="quote-card lead-form" id={id} novalidate data-wa={settings.contact.whatsapp} data-turnstile={turnstileKey || undefined}>
+  <div class="quote-head">
+    <h3><svg viewBox="0 0 24 24"><use href="#i-send" /></svg>Solicita una cotización</h3>
+    <span>Te responderemos en la brevedad</span>
+  </div>
+  <div class="form-grid">
+    <label>Nombre completo *<input name="name" type="text" placeholder="Ej. Juan Pérez" required minlength="2" maxlength="120" autocomplete="name" /></label>
+    <label>Correo electrónico *<input name="email" type="email" placeholder="Ej. tucorreo@ejemplo.com" required maxlength="160" autocomplete="email" /></label>
+    <label>Teléfono *<input name="phone" type="tel" placeholder="Ej. 931 637 047" required minlength="6" maxlength="30" pattern="[0-9+\(\)\s\-]{6,30}" autocomplete="tel" /></label>
+    <label>Distrito / Ubicación *<input name="district" type="text" placeholder="Ej. Pachacamac - Lima" required maxlength="120" /></label>
+    <label>Empresa<input name="company" type="text" placeholder="Ej. Mi Empresa SAC" maxlength="120" autocomplete="organization" /></label>
+    <label class="span-msg">Mensaje (opcional)<textarea name="message" rows="3" maxlength="3000" placeholder="Cuéntanos más sobre tu proyecto..."></textarea></label>
+    <label>Tipo de servicio *
+      <select name="service" required>
+        <option value="">Selecciona un servicio</option>
+        {services.map((s) => <option value={s.id} data-label={s.name} selected={s.id === selected}>{s.name}</option>)}
+        {plans.length > 0 && (
+          <optgroup label="Planes">
+            {plans.map((p) => <option value={`plan:${p}`} data-label={p}>{p}</option>)}
+          </optgroup>
+        )}
+      </select>
+    </label>
+    <label>Área aproximada (m²)<input name="area_m2" type="number" min="1" max="99999999" step="any" inputmode="decimal" placeholder="Ej. 100" /></label>
+  </div>
+  <div class="hp" aria-hidden="true"><label>Sitio web<input name="website" type="text" tabindex="-1" autocomplete="off" /></label></div>
+  {turnstileKey && <div class="ts-slot"></div>}
+  <div class="form-actions">
+    <button type="button" class="btn btn-dark" data-send="whatsapp"><svg viewBox="0 0 24 24" class="ico ico-lg"><use href="#i-wa" /></svg>Enviar solicitud por WhatsApp</button>
+    <button type="submit" class="btn btn-outline-dark" data-send="form"><svg viewBox="0 0 24 24" class="ico"><use href="#i-send-solid" /></svg><span class="btn-label">Enviar formulario</span></button>
+  </div>
+  <p class="form-status" role="status" aria-live="polite"></p>
+  <p class="form-privacy">Usaremos tus datos solo para responder tu solicitud.</p>
+</form>
+
+<script>
+  import { initLeadForms } from "../scripts/lead-form";
+  initLeadForms();
+</script>

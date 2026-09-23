@@ -1,0 +1,15 @@
+---
+// Hojas decorativas (PNG con transparencia → WebP pequeño). Puramente visuales.
+import { Image } from "astro:assets";
+import hoja1 from "../assets/deco/hoja1.png";
+import hoja2 from "../assets/deco/hoja2.png";
+import hoja3 from "../assets/deco/hoja3.png";
+import hoja4 from "../assets/deco/hoja4.png";
+import hoja5 from "../assets/deco/hoja5.png";
+import hoja6 from "../assets/deco/hoja6.png";
+
+const leaves = { 1: hoja1, 2: hoja2, 3: hoja3, 4: hoja4, 5: hoja5, 6: hoja6 } as const;
+interface Props { n: 1 | 2 | 3 | 4 | 5 | 6; class: string; width?: number }
+const { n, class: cls, width = 220 } = Astro.props;
+---
+<Image src={leaves[n]} alt="" aria-hidden="true" class={`leaf ${cls}`} width={width} format="webp" quality={72} loading="lazy" decoding="async" />

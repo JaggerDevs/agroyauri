@@ -1,0 +1,18 @@
+---
+import Img from "./Img.astro";
+import type { Service } from "../lib/data";
+interface Props { service: Service; position?: string }
+const { service: s } = Astro.props;
+// Encuadres aprobados en el diseño original
+const positions: Record<string, string> = { plagas: "50% 70%", saneamiento: "70% 40%", insumos: "50% 40%" };
+---
+<article class="service-card">
+  <a href={`/servicios/${s.slug}`} class="card-link" aria-label={s.name}></a>
+  <div class="media">
+    <Img src={s.image_url} alt={s.name} widths={[320, 480, 640]} sizes="(max-width: 760px) 72vw, (max-width: 1180px) 33vw, 220px" style={`object-position:${positions[s.icon ?? ""] ?? "50% 50%"}`} />
+  </div>
+  <div class="body">
+    <h3>{s.icon && <svg class="svc-ico" aria-hidden="true"><use href={`#svc-${s.icon}`} /></svg>}{s.name}</h3>
+    {s.short_description && <p>{s.short_description}</p>}
+  </div>
+</article>

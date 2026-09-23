@@ -1,0 +1,102 @@
+---
+import "../styles/global.css";
+import "../styles/pages.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import Sprite from "../components/Sprite.astro";
+import WhatsAppFloat from "../components/WhatsAppFloat.astro";
+import { getSiteData } from "../lib/data";
+import { SITE_NAME } from "../lib/site";
+import ogDefault from "../assets/media/site/hero.jpg";
+import { getImage } from "astro:assets";
+import { resolveImage } from "../lib/media";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Ruta canónica ("/servicios/x"). Por defecto, la ruta actual. */
+  path?: string;
+  /** Imagen para redes (ruta de BD o /media/...). */
+  image?: string | null;
+  type?: "website" | "article";
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+  /** Mensaje del botón flotante de WhatsApp (p. ej. el servicio que se está viendo). */
+  waText?: string;
+  bare?: boolean;
+}
+
+const { title, description, path, image, type = "website", noindex = false, jsonLd = [], waText, bare = false } = Astro.props;
+const { settings } = await getSiteData();
+const site = Astro.site!;
+const cleanPath = (path ?? Astro.url.pathname).replace(/\.html$/, "").replace(/\/index$/, "").replace(/(.)\/$/, "$1") || "/";
+const canonical = new URL(cleanPath, site).href;
+
+const ogSrc = resolveImage(image) ?? ogDefault;
+const og = await getImage({ src: ogSrc, width: 1200, height: 630, fit: "cover", format: "jpg", ...(typeof ogSrc === "string" ? { inferSize: true } : {}) });
+const ogUrl = new URL(og.src, site).href;
+
+const GA_ID = import.meta.env.PUBLIC_GA_ID;
+const GSC = import.meta.env.PUBLIC_GSC_VERIFICATION;
+---
+<!doctype html>
+<html lang="es-PE">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  {noindex && <meta name="robots" content="noindex, nofollow" />}
+  <meta name="theme-color" content="#0a3a22" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="preload" href="/fonts/lora-700.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin />
+
+  <meta property="og:type" content={type} />
+  <meta property="og:site_name" content={SITE_NAME} />
+  <meta property="og:locale" content="es_PE" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogUrl} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  {GSC && <meta name="google-site-verification" content={GSC} />}
+
+  {jsonLd.map((d) => <script type="application/ld+json" set:html={JSON.stringify(d)} />)}
+
+  <!-- Atribución: guarda UTM + página de entrada de la sesión para asociarlos al lead. -->
+  <script is:inline>
+    try {
+      if (!sessionStorage.getItem("ay_attr")) {
+        var q = new URLSearchParams(location.search), a = { landing_page: location.pathname, referrer: document.referrer || "" };
+        ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(function (k) { if (q.get(k)) a[k] = q.get(k); });
+        sessionStorage.setItem("ay_attr", JSON.stringify(a));
+      }
+    } catch (e) {}
+  </script>
+
+  {GA_ID && (
+    <>
+      <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
+      <script is:inline define:vars={{ GA_ID }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", GA_ID);
+      </script>
+    </>
+  )}
+</head>
+<body>
+  {!bare && <Header settings={settings} />}
+  <main id="contenido">
+    <slot />
+  </main>
+  {!bare && <Footer settings={settings} />}
+  {!bare && <WhatsAppFloat settings={settings} text={waText} />}
+  <Sprite />
+</body>
+</html>

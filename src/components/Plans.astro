@@ -1,0 +1,54 @@
+---
+import Deco from "./Deco.astro";
+import type { Settings } from "../lib/data";
+import { formatSoles } from "../lib/site";
+interface Props { settings: Settings }
+const { plans } = Astro.props.settings;
+const priceText = (n: number) => formatSoles(n).replace("S/ ", "");
+---
+<section class="section plans" id="costos">
+  <Deco n={3} class="leaf-pln-l" />
+  <div class="plans-wrap">
+    <div class="plans-main">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Nuestros planes</p>
+          <h2>{plans.title}</h2>
+        </div>
+      </div>
+      <div class="plan-grid">
+        {plans.items.map((p) => (
+          <article class:list={["plan-card", { featured: p.featured }]}>
+            {p.featured && <span class="badge">Más solicitado</span>}
+            <header>
+              <svg viewBox="0 0 64 64" class="plan-ico" aria-hidden="true"><use href={p.icon === "gear" ? "#i-gear" : "#i-leaf-solid"} /></svg>
+              <div><h3>{p.name}</h3><p>{p.subtitle}</p></div>
+            </header>
+            {p.show_price && p.price !== null ? (
+              <p class="price"><span class="cur">S/</span> {priceText(p.price)} <small class:list={{ per: p.price_label.startsWith("/") }}>{p.price_label}</small></p>
+            ) : (
+              <p class="price price-quote">A cotizar</p>
+            )}
+            <ul class="checks">{p.features.map((f) => <li>{f}</li>)}</ul>
+            <a href="#contacto" class="btn btn-dark btn-block" data-plan={p.name}>Seleccionar plan <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
+          </article>
+        ))}
+      </div>
+      {plans.note && <p class="plans-note">{plans.note}</p>}
+    </div>
+
+    <aside class="plans-aside">
+      <p class="aside-script" aria-hidden="true">Espacios verdes,<br />vidas más plenas <svg viewBox="0 0 40 40" class="script-leaf"><use href="#i-leaf-line" /></svg></p>
+      <Deco n={2} class="aside-leaf" width={260} />
+      <div class="aside-body">
+        <h3>Áreas verdes <br />que generan <br />bienestar y valor</h3>
+        <ul class="checks checks-light">
+          <li>Mejores espacios</li>
+          <li>Mayor productividad</li>
+          <li>Entornos más saludables</li>
+          <li>Un planeta más verde</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>

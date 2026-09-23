@@ -1,0 +1,69 @@
+---
+import { Image } from "astro:assets";
+import logo from "../assets/deco/logo_verde.png";
+import type { Settings } from "../lib/data";
+import { waLink, waGeneralText } from "../lib/site";
+
+interface Props { settings: Settings }
+const { settings } = Astro.props;
+const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "") || "/";
+
+const items = [
+  { href: "/", label: "Inicio", match: (p: string) => p === "/" },
+  { href: "/nosotros", label: "Nosotros", match: (p: string) => p.startsWith("/nosotros") },
+  { href: "/servicios", label: "Servicios", match: (p: string) => p.startsWith("/servicios") },
+  { href: "/proyectos", label: "Proyectos", match: (p: string) => p.startsWith("/proyectos") },
+  { href: "/#costos", label: "Costos", match: () => false },
+  { href: "/contacto", label: "Contacto", match: (p: string) => p.startsWith("/contacto") },
+];
+---
+<header class="site-header">
+  <div class="nav-bar">
+    <a href="/" class="brand" aria-label="AGROYAURI SAC - Inicio">
+      <Image src={logo} alt="" width={44} height={38} format="webp" loading="eager" />
+      <span>AGROYAURI SAC</span>
+    </a>
+    <nav class="main-nav" id="mainNav" aria-label="Principal">
+      {items.map((i) => (
+        <a href={i.href} class={i.match(path) ? "active" : undefined} aria-current={i.match(path) ? "page" : undefined}>{i.label}</a>
+      ))}
+    </nav>
+    <div class="nav-actions">
+      <a href={waLink(settings, waGeneralText)} class="wa-mini" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp" data-wa>
+        <svg viewBox="0 0 24 24"><use href="#i-wa" /></svg>
+      </a>
+      <a href="/#contacto" class="btn btn-dark btn-sm">
+        <svg viewBox="0 0 24 24" class="ico"><use href="#i-wa" /></svg>
+        Cotiza ahora
+        <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainNav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById("menuToggle");
+  const nav = document.getElementById("mainNav");
+  if (toggle && nav) {
+    const set = (open: boolean) => {
+      nav.classList.toggle("open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+    };
+    toggle.addEventListener("click", () => set(!nav.classList.contains("open")));
+    nav.addEventListener("click", (e) => { if ((e.target as HTMLElement).tagName === "A") set(false); });
+  }
+  const header = document.querySelector<HTMLElement>(".site-header");
+  if (header) {
+    let fixed = false;
+    const onScroll = () => {
+      const f = window.scrollY > 140;
+      if (f !== fixed) { fixed = f; header.classList.toggle("is-fixed", f); }
+    };
+    addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  }
+</script>

@@ -1,0 +1,14 @@
+---
+import Img from "./Img.astro";
+import type { Project, Service } from "../lib/data";
+import { projectSubtitle } from "../lib/site";
+interface Props { project: Project; services: Service[]; heading?: "h2" | "h3"; sizes?: string }
+const { project: p, services, heading = "h3", sizes = "(max-width: 760px) 78vw, (max-width: 1180px) 33vw, 260px" } = Astro.props;
+const H = heading;
+---
+<article class="project-card">
+  <a href={`/proyectos/${p.slug}`} class="card-link" aria-label={p.title}></a>
+  <Img src={p.featured_image} alt={p.title} widths={[320, 520, 800]} sizes={sizes} />
+  <H>{p.title}</H>
+  <p>{projectSubtitle(p, services)}</p>
+</article>

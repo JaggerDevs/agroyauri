@@ -1,0 +1,42 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import Img from "../../components/Img.astro";
+import CtaFinal from "../../components/CtaFinal.astro";
+import { getSiteData, type BlogPost } from "../../lib/data";
+import { article, breadcrumbs } from "../../lib/schema";
+import { md, truncate } from "../../lib/site";
+
+export async function getStaticPaths() {
+  const { posts } = await getSiteData();
+  return posts.map((p) => ({ params: { slug: p.slug }, props: { post: p } }));
+}
+
+const { post: p } = Astro.props as { post: BlogPost };
+const { settings } = await getSiteData();
+const path = `/blog/${p.slug}`;
+const crumbs = [{ name: "Inicio", path: "/" }, { name: "Blog", path: "/blog" }, { name: p.title, path }];
+const fmt = new Intl.DateTimeFormat("es-PE", { dateStyle: "long", timeZone: "America/Lima" });
+const meta = [p.published_at && fmt.format(new Date(p.published_at)), p.author].filter(Boolean).join(" · ");
+---
+<Base
+  title={p.seo_title || `${p.title} | AGROYAURI SAC`}
+  description={p.seo_description || truncate(p.excerpt || p.title, 160)}
+  path={path}
+  image={p.featured_image}
+  type="article"
+  jsonLd={[article(p, Astro.site!), breadcrumbs(Astro.site!, crumbs)]}
+>
+  <PageHero eyebrow="Blog" title={p.title} lead={meta} image={p.featured_image || "/media/site/jardin-principal.jpg"} crumbs={crumbs} />
+  <section class="section">
+    <div class="container">
+      <article class="prose" style="margin-inline:auto">
+        {p.featured_image && (
+          <div class="article-cover"><Img src={p.featured_image} alt={p.title} widths={[640, 960, 1280]} sizes="(max-width: 800px) 92vw, 760px" /></div>
+        )}
+        <Fragment set:html={md(p.content)} />
+      </article>
+    </div>
+  </section>
+  <CtaFinal settings={settings} />
+</Base>

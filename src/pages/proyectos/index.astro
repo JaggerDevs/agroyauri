@@ -1,0 +1,67 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import CtaFinal from "../../components/CtaFinal.astro";
+import { getSiteData } from "../../lib/data";
+import { breadcrumbs } from "../../lib/schema";
+
+const { settings, services, projects } = await getSiteData();
+const crumbs = [{ name: "Inicio", path: "/" }, { name: "Proyectos", path: "/proyectos" }];
+const used = services.filter((s) => projects.some((p) => p.service_id === s.id));
+---
+<Base
+  title="Proyectos de Paisajismo y Áreas Verdes en Lima | AGROYAURI SAC"
+  description="Proyectos reales de Agroyauri en Lima: paisajismo, instalación de grass, riego automatizado en La Molina, fumigación, recuperación de áreas verdes y mantenimiento de condominios."
+  path="/proyectos"
+  jsonLd={[breadcrumbs(Astro.site!, crumbs)]}
+>
+  <PageHero
+    eyebrow="Nuestros proyectos"
+    title={'Resultados que<br>hablan <span class="lime">por nosotros</span>'}
+    lead="Trabajos reales en viviendas, condominios y empresas."
+    image="/media/projects/paisajismo-decoracion-granos-verdes/01.jpg"
+    imagePosition="center 60%"
+    crumbs={crumbs}
+  />
+
+  <section class="section">
+    <div class="container">
+      {used.length > 1 && (
+        <div class="chips" role="group" aria-label="Filtrar por servicio">
+          <button type="button" class="chip" aria-pressed="true" data-filter="">Todos</button>
+          {used.map((s) => <button type="button" class="chip" aria-pressed="false" data-filter={s.id}>{s.name}</button>)}
+        </div>
+      )}
+      <div class="projects-grid" id="projectsGrid">
+        {projects.map((p) => (
+          <div data-service={p.service_id ?? ""}>
+            <ProjectCard project={p} services={services} heading="h2" sizes="(max-width: 760px) 45vw, (max-width: 1180px) 30vw, 300px" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaFinal settings={settings} />
+</Base>
+
+<style>
+  #projectsGrid > div { display: contents; }
+  #projectsGrid > div[hidden] { display: none; }
+  #projectsGrid :global(.project-card h2) { font-size: 15px; font-weight: 600; color: var(--forest-900); padding: 10px 12px 0; line-height: 1.3; font-family: var(--sans); display: block; }
+  #projectsGrid :global(.project-card h2::after) { display: none; }
+</style>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>(".chip[data-filter]");
+  chips.forEach((chip) =>
+    chip.addEventListener("click", () => {
+      const f = chip.dataset.filter;
+      chips.forEach((c) => c.setAttribute("aria-pressed", String(c === chip)));
+      document.querySelectorAll<HTMLElement>("#projectsGrid > [data-service]").forEach((el) => {
+        el.hidden = !!f && el.dataset.service !== f;
+      });
+    })
+  );
+</script>

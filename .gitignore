@@ -1,0 +1,25 @@
+# dependencias y build
+node_modules/
+dist/
+.astro/
+.wrangler/
+
+# secretos locales (NUNCA subir)
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# material de entrega original (privado: brochure, referencias, originales pesados)
+documentos/
+referencias/
+assets/
+LEEME_PRIMERO.txt
+PROMPT_PARA_CODIGO.txt
+
+# versión 1 estática (reemplazada por src/)
+/index.html
+/nosotros/
+/css/
+/js/
+/img/

@@ -1,0 +1,49 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import Img from "../../components/Img.astro";
+import CtaFinal from "../../components/CtaFinal.astro";
+import { getSiteData } from "../../lib/data";
+import { breadcrumbs } from "../../lib/schema";
+
+const { settings, posts } = await getSiteData();
+const crumbs = [{ name: "Inicio", path: "/" }, { name: "Blog", path: "/blog" }];
+const fmt = new Intl.DateTimeFormat("es-PE", { dateStyle: "long", timeZone: "America/Lima" });
+---
+<Base
+  title="Blog de Jardinería, Riego y Áreas Verdes | AGROYAURI SAC"
+  description="Consejos y guías de Agroyauri sobre paisajismo, mantenimiento de jardines, riego tecnificado y control de plagas en Lima."
+  path="/blog"
+  noindex={posts.length === 0}
+  jsonLd={[breadcrumbs(Astro.site!, crumbs)]}
+>
+  <PageHero eyebrow="Blog" title={'Consejos para<br><span class="lime">espacios verdes</span>'} lead="Guías prácticas sobre jardines, riego y cuidado de áreas verdes." image="/media/site/jardin-principal.jpg" crumbs={crumbs} />
+
+  <section class="section">
+    <div class="container">
+      {posts.length === 0 ? (
+        <div class="empty-state">
+          <h2 class="empty-title">Muy pronto publicaremos artículos</h2>
+          <p>Mientras tanto, conoce nuestros servicios o escríbenos con tus dudas.</p>
+          <a href="/servicios" class="btn btn-dark">Ver servicios</a>
+        </div>
+      ) : (
+        <div class="blog-grid">
+          {posts.map((p) => (
+            <article class="post-card">
+              <a href={`/blog/${p.slug}`} class="card-link" aria-label={p.title}></a>
+              {p.featured_image && <Img src={p.featured_image} alt={p.title} widths={[400, 700]} sizes="(max-width: 760px) 90vw, 380px" />}
+              <div class="body">
+                {p.published_at && <time datetime={p.published_at}>{fmt.format(new Date(p.published_at))}</time>}
+                <h2 class="post-title">{p.title}</h2>
+                {p.excerpt && <p>{p.excerpt}</p>}
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <CtaFinal settings={settings} />
+</Base>

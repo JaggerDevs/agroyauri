@@ -1,0 +1,59 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import Img from "../../components/Img.astro";
+import CtaFinal from "../../components/CtaFinal.astro";
+import { getSiteData } from "../../lib/data";
+import { breadcrumbs } from "../../lib/schema";
+import { servicePrice } from "../../lib/site";
+
+const { settings, services } = await getSiteData();
+const crumbs = [{ name: "Inicio", path: "/" }, { name: "Servicios", path: "/servicios" }];
+const positions: Record<string, string> = { plagas: "50% 70%", saneamiento: "70% 40%", insumos: "50% 40%" };
+const itemList = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  itemListElement: services.map((s, i) => ({ "@type": "ListItem", position: i + 1, name: s.name, url: new URL(`/servicios/${s.slug}`, Astro.site).href })),
+};
+---
+<Base
+  title="Servicios de Paisajismo, Riego y Control de Plagas en Lima | AGROYAURI SAC"
+  description="Servicios de áreas verdes en Lima: paisajismo, mantenimiento de jardines, riego tecnificado, fumigación y control de plagas, saneamiento ambiental, insumos agrícolas y plantas ornamentales."
+  path="/servicios"
+  jsonLd={[breadcrumbs(Astro.site!, crumbs), itemList]}
+>
+  <PageHero
+    eyebrow="Nuestros servicios"
+    title={'Soluciones integrales<br>para <span class="lime">cada necesidad</span>'}
+    lead="Diseñamos, implementamos y mantenemos áreas verdes para viviendas, condominios y empresas en Lima."
+    image="/media/services/paisajismo.jpg"
+    imagePosition="center 55%"
+    crumbs={crumbs}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="cards-grid">
+        {services.map((s) => {
+          const price = servicePrice(s);
+          return (
+            <article class="service-card">
+              <a href={`/servicios/${s.slug}`} class="card-link" aria-label={s.name}></a>
+              <div class="media">
+                <Img src={s.image_url} alt={s.name} widths={[400, 640, 800]} sizes="(max-width: 760px) 90vw, (max-width: 980px) 45vw, 400px" style={`object-position:${positions[s.icon ?? ""] ?? "50% 50%"}`} />
+              </div>
+              <div class="body">
+                <h2 class="card-h">{s.icon && <svg class="svc-ico" aria-hidden="true"><use href={`#svc-${s.icon}`} /></svg>}{s.name}</h2>
+                {s.short_description && <p>{s.short_description}</p>}
+                {price && <span class="card-price">{price}</span>}
+                <span class="card-more">Ver servicio <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></span>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <CtaFinal settings={settings} />
+</Base>

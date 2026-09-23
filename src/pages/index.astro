@@ -1,0 +1,118 @@
+---
+import Base from "../layouts/Base.astro";
+import Img from "../components/Img.astro";
+import Deco from "../components/Deco.astro";
+import ServiceCard from "../components/ServiceCard.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import Plans from "../components/Plans.astro";
+import ContactSection from "../components/ContactSection.astro";
+import { getSiteData } from "../lib/data";
+import { organization } from "../lib/schema";
+
+const { settings, services, projects } = await getSiteData();
+const homeServices = services.filter((s) => s.show_in_home).slice(0, 6);
+const featured = projects.filter((p) => p.is_featured);
+const carousel = (featured.length >= 3 ? featured : projects).slice(0, 8);
+---
+<Base
+  title="Empresa de Paisajismo y Áreas Verdes en Lima | AGROYAURI SAC"
+  description="Diseñamos, implementamos y mantenemos áreas verdes en Lima: paisajismo, riego tecnificado, fumigación y control de plagas, saneamiento ambiental, insumos agrícolas y plantas ornamentales."
+  path="/"
+  jsonLd={[organization(settings, Astro.site!)]}
+>
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <Img src="/media/site/hero.jpg" alt="" class="hero-bg" widths={[640, 960, 1280, 1672]} sizes="100vw" loading="eager" fetchpriority="high" />
+    <Deco n={2} class="leaf-hero-l" />
+    <Deco n={6} class="leaf-hero-l2" width={120} />
+    <Deco n={5} class="leaf-hero-r" width={160} />
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow eyebrow-light">Espacios que transforman vidas</p>
+        <h1>Soluciones verdes<br />para un <span class="lime">mejor<br />mañana</span></h1>
+        <p class="hero-text">Diseñamos, implementamos y mantenemos áreas verdes que mejoran tu entorno. Paisajismo, sistemas de riego, control de plagas y más, con la calidad y experiencia de AGROYAURI SAC.</p>
+        <div class="hero-ctas">
+          <a href="#contacto" class="btn btn-lime">Solicita una cotización <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
+          <a href="/proyectos" class="btn btn-outline-light">Ver proyectos <span class="play"><svg viewBox="0 0 24 24"><path d="M9 7l8 5-8 5z" fill="currentColor" /></svg></span></a>
+        </div>
+        <ul class="hero-benefits">
+          <li><svg viewBox="0 0 24 24"><use href="#i-leaf" /></svg><span>Entornos<br />más saludables</span></li>
+          <li><svg viewBox="0 0 24 24"><use href="#i-people" /></svg><span>Espacios<br />más productivos</span></li>
+          <li><svg viewBox="0 0 24 24"><use href="#i-globe" /></svg><span>Un futuro<br />más verde</span></li>
+        </ul>
+      </div>
+      <p class="hero-script" aria-hidden="true">La naturaleza<br />también es una<br />gran inversión
+        <svg viewBox="0 0 40 40" class="script-leaf"><use href="#i-leaf-line" /></svg>
+      </p>
+    </div>
+    <svg class="hero-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,58 C160,20 330,18 520,48 C720,80 860,112 1060,96 C1220,84 1340,52 1440,30 L1440,120 L0,120 Z" fill="#fbfaf4" />
+    </svg>
+  </section>
+
+  <!-- ============ SERVICIOS ============ -->
+  <section class="section services" id="servicios">
+    <Deco n={4} class="leaf-srv-l" width={160} />
+    <Deco n={1} class="leaf-srv-r" width={160} />
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Nuestros servicios</p>
+          <h2>Soluciones integrales para cada necesidad</h2>
+        </div>
+        <a href="/servicios" class="link-more">Ver todos los servicios <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
+      </div>
+      <div class="cards-6">
+        {homeServices.map((s) => <ServiceCard service={s} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROYECTOS ============ -->
+  <section class="section projects" id="proyectos">
+    <Deco n={6} class="leaf-prj-l" width={140} />
+    <Deco n={5} class="leaf-prj-r" width={140} />
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Nuestros proyectos</p>
+          <h2>Resultados que hablan por nosotros</h2>
+        </div>
+        <a href="/proyectos" class="link-more">Ver todos los proyectos <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
+      </div>
+      <div class="carousel" data-carousel>
+        <button class="car-btn prev" aria-label="Proyecto anterior" data-dir="-1"><svg viewBox="0 0 24 24"><use href="#i-arrow" /></svg></button>
+        <div class="car-track" tabindex="0" aria-label="Proyectos realizados">
+          {carousel.map((p) => <ProjectCard project={p} services={services} />)}
+        </div>
+        <button class="car-btn next" aria-label="Proyecto siguiente" data-dir="1"><svg viewBox="0 0 24 24"><use href="#i-arrow" /></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <Plans settings={settings} />
+  <ContactSection settings={settings} services={services} />
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-carousel]").forEach((car) => {
+    const track = car.querySelector<HTMLElement>(".car-track")!;
+    const prev = car.querySelector<HTMLButtonElement>(".prev");
+    const next = car.querySelector<HTMLButtonElement>(".next");
+    const update = () => {
+      const max = track.scrollWidth - track.clientWidth - 2;
+      if (prev) prev.disabled = track.scrollLeft <= 2;
+      if (next) next.disabled = track.scrollLeft >= max;
+    };
+    car.querySelectorAll<HTMLButtonElement>(".car-btn").forEach((btn) =>
+      btn.addEventListener("click", () => {
+        const card = track.querySelector(".project-card");
+        const step = card ? card.getBoundingClientRect().width + 16 : track.clientWidth;
+        track.scrollBy({ left: step * Number(btn.dataset.dir), behavior: "smooth" });
+      })
+    );
+    track.addEventListener("scroll", update, { passive: true });
+    addEventListener("resize", update);
+    update();
+  });
+</script>

@@ -1,0 +1,67 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import Img from "../components/Img.astro";
+import CtaFinal from "../components/CtaFinal.astro";
+import { getSiteData } from "../lib/data";
+import { breadcrumbs } from "../lib/schema";
+import { formatSoles, waLink, waProductText } from "../lib/site";
+
+const { settings, categories, products } = await getSiteData();
+const crumbs = [{ name: "Inicio", path: "/" }, { name: "Productos", path: "/productos" }];
+const groups = [
+  ...categories.map((c) => ({ name: c.name, slug: c.slug, items: products.filter((p) => p.category_id === c.id) })),
+  { name: "Otros productos", slug: "otros", items: products.filter((p) => !p.category_id || !categories.some((c) => c.id === p.category_id)) },
+].filter((g) => g.items.length);
+---
+<Base
+  title="Insumos Agrícolas, Fertilizantes y Plantas Ornamentales | AGROYAURI SAC"
+  description="Catálogo de Agroyauri: fertilizantes, plaguicidas, abono orgánico, tierra de chacra y plantas ornamentales en Lima. Consulta disponibilidad y precio por WhatsApp."
+  path="/productos"
+  jsonLd={[breadcrumbs(Astro.site!, crumbs)]}
+>
+  <PageHero
+    eyebrow="Catálogo"
+    title={'Insumos agrícolas y<br><span class="lime">plantas ornamentales</span>'}
+    lead="Productos de calidad para el cuidado de jardines, áreas verdes y cultivos. Consúltanos por WhatsApp."
+    image="/media/site/campo.jpg"
+    imagePosition="center 40%"
+    crumbs={crumbs}
+  />
+
+  <section class="section">
+    <div class="container">
+      {groups.length === 0 && (
+        <div class="empty-state">
+          <h2 class="empty-title">Catálogo en preparación</h2>
+          <p>Escríbenos y te contamos qué productos tenemos disponibles.</p>
+          <a href={waLink(settings)} class="btn btn-dark" target="_blank" rel="noopener" data-wa>Consultar por WhatsApp</a>
+        </div>
+      )}
+      {groups.map((g) => (
+        <>
+          <h2 class="cat-title" id={g.slug}>{g.name}</h2>
+          <div class="product-grid">
+            {g.items.map((p) => (
+              <article class="product-card" id={p.slug}>
+                <Img src={p.image_url} alt={p.name} widths={[300, 480, 640]} sizes="(max-width: 760px) 45vw, (max-width: 1180px) 30vw, 290px" />
+                <div class="body">
+                  <h3>{p.name}</h3>
+                  <div class="product-meta">
+                    {p.show_price && p.price !== null && <span class="product-price">{formatSoles(p.price)}{p.price_unit ? ` / ${p.price_unit}` : ""}</span>}
+                    {p.featured && <span class="tag">Destacado</span>}
+                    {!p.available && <span class="tag off">Agotado</span>}
+                  </div>
+                  {p.description && <p>{p.description}</p>}
+                  <a href={waLink(settings, waProductText(p.name))} class="btn btn-dark" target="_blank" rel="noopener" data-wa><svg viewBox="0 0 24 24" class="ico"><use href="#i-wa" /></svg>Consultar por WhatsApp</a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
+      ))}
+    </div>
+  </section>
+
+  <CtaFinal settings={settings} title="¿Necesitas asesoría para tu jardín o cultivo?" />
+</Base>

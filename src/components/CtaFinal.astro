@@ -1,0 +1,24 @@
+---
+import type { Settings } from "../lib/data";
+import { waLink, waGeneralText } from "../lib/site";
+interface Props { settings: Settings; title?: string; text?: string; waText?: string }
+const {
+  settings,
+  title = "¿Listo para transformar tu espacio?",
+  text = "Cuéntanos sobre tu proyecto y recibe una asesoría personalizada de nuestro equipo.",
+  waText = waGeneralText,
+} = Astro.props;
+---
+<section class="cta-final">
+  <div class="container cta-box">
+    <div>
+      <p class="eyebrow eyebrow-light">Trabajemos juntos</p>
+      <h2 class="cta-title">{title}</h2>
+      <p>{text}</p>
+    </div>
+    <div class="btns">
+      <a href="/contacto" class="btn btn-lime">Solicita una cotización <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
+      <a href={waLink(settings, waText)} target="_blank" rel="noopener" class="btn btn-outline-light" data-wa><svg viewBox="0 0 24 24" class="ico"><use href="#i-wa" /></svg>WhatsApp</a>
+    </div>
+  </div>
+</section>

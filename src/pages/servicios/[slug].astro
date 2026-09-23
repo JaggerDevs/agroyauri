@@ -1,0 +1,76 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import ContactSection from "../../components/ContactSection.astro";
+import { getSiteData, type Service } from "../../lib/data";
+import { breadcrumbs, service as serviceLd } from "../../lib/schema";
+import { md, servicePrice, waLink, waServiceText, truncate } from "../../lib/site";
+
+export async function getStaticPaths() {
+  const { services } = await getSiteData();
+  return services.map((s) => ({ params: { slug: s.slug }, props: { service: s } }));
+}
+
+const { service: s } = Astro.props as { service: Service };
+const { settings, services, projects } = await getSiteData();
+const related = projects.filter((p) => p.service_id === s.id);
+const others = services.filter((o) => o.id !== s.id);
+const price = servicePrice(s);
+const waText = waServiceText(s.name);
+const path = `/servicios/${s.slug}`;
+const crumbs = [{ name: "Inicio", path: "/" }, { name: "Servicios", path: "/servicios" }, { name: s.name, path }];
+const title = s.seo_title || `${s.name} en Lima | AGROYAURI SAC`;
+const description = s.seo_description || truncate(s.short_description || s.name, 160);
+---
+<Base
+  title={title}
+  description={description}
+  path={path}
+  image={s.image_url}
+  waText={waText}
+  jsonLd={[serviceLd(s, Astro.site!), breadcrumbs(Astro.site!, crumbs)]}
+>
+  <PageHero eyebrow="Servicio" title={s.name} lead={s.short_description} image={s.image_url} imagePosition="center 50%" crumbs={crumbs} />
+
+  <section class="section">
+    <div class="container detail-grid">
+      <div class="prose" set:html={md(s.description)} />
+      <aside class="detail-aside">
+        <div class="aside-card">
+          <h2 class="aside-title">Solicita tu cotización</h2>
+          {price ? <p class="aside-price">{price}</p> : <p>El precio depende del área y del alcance del trabajo. Te enviamos una cotización sin compromiso.</p>}
+          <a href={waLink(settings, waText)} class="btn btn-dark" target="_blank" rel="noopener" data-wa><svg viewBox="0 0 24 24" class="ico ico-lg"><use href="#i-wa" /></svg>Cotizar por WhatsApp</a>
+          <a href="#contacto" class="btn btn-outline-dark">Llenar formulario</a>
+        </div>
+        {others.length > 0 && (
+          <div class="aside-card">
+            <h2 class="aside-title">Otros servicios</h2>
+            <ul class="checks">
+              {others.map((o) => <li><a href={`/servicios/${o.slug}`}>{o.name}</a></li>)}
+            </ul>
+          </div>
+        )}
+      </aside>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="section projects">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Proyectos realizados</p>
+            <h2>Trabajos de {s.name.toLowerCase()}</h2>
+          </div>
+          <a href="/proyectos" class="link-more">Ver todos los proyectos <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
+        </div>
+        <div class="projects-grid">
+          {related.slice(0, 4).map((p) => <ProjectCard project={p} services={services} sizes="(max-width: 760px) 45vw, (max-width: 1180px) 30vw, 300px" />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <ContactSection settings={settings} services={services} selected={s.id} />
+</Base>

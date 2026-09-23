@@ -1,0 +1,114 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import Img from "../../components/Img.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import CtaFinal from "../../components/CtaFinal.astro";
+import { getImage } from "astro:assets";
+import { getSiteData, type Project } from "../../lib/data";
+import { breadcrumbs, projectPage } from "../../lib/schema";
+import { md, truncate, waLink, waServiceText } from "../../lib/site";
+import { resolveImage } from "../../lib/media";
+
+export async function getStaticPaths() {
+  const { projects } = await getSiteData();
+  return projects.map((p) => ({ params: { slug: p.slug }, props: { project: p } }));
+}
+
+const { project: p } = Astro.props as { project: Project };
+const { settings, services, projects } = await getSiteData();
+const svc = services.find((s) => s.id === p.service_id);
+const path = `/proyectos/${p.slug}`;
+const crumbs = [{ name: "Inicio", path: "/" }, { name: "Proyectos", path: "/proyectos" }, { name: p.title, path }];
+const where = [p.client, p.location].filter(Boolean).join(" – ");
+const title = p.seo_title || `${p.title}${where ? ` – ${where}` : ""} | AGROYAURI SAC`;
+const description = p.seo_description || truncate(p.short_description || p.description || p.title, 160);
+
+// Galería: sin repetir antes/después; enlace a una versión grande optimizada.
+const gallerySrc = p.gallery.filter((g) => g !== p.before_image && g !== p.after_image);
+const gallery = await Promise.all(
+  gallerySrc.map(async (src) => {
+    const img = resolveImage(src);
+    if (!img) return null;
+    const big = await getImage({ src: img, width: 1600, format: "webp", ...(typeof img === "string" ? { inferSize: true } : {}) });
+    return { src, href: big.src };
+  })
+);
+const others = projects.filter((o) => o.id !== p.id).sort((a, b) => Number(b.service_id === p.service_id) - Number(a.service_id === p.service_id)).slice(0, 4);
+---
+<Base
+  title={title}
+  description={description}
+  path={path}
+  image={p.featured_image}
+  type="article"
+  waText={svc ? waServiceText(svc.name) : undefined}
+  jsonLd={[projectPage(p, Astro.site!), breadcrumbs(Astro.site!, crumbs)]}
+>
+  <PageHero eyebrow="Proyecto" title={p.title} lead={where || p.short_description} image={p.featured_image} imagePosition="center 50%" crumbs={crumbs} />
+
+  <section class="section">
+    <div class="container detail-grid">
+      <div>
+        <div class="prose">
+          {p.short_description && <p><strong>{p.short_description}</strong></p>}
+          <Fragment set:html={md(p.description)} />
+        </div>
+
+        {p.before_image && p.after_image && (
+          <>
+            <h2 class="subhead">Antes y después</h2>
+            <div class="before-after">
+              <figure><Img src={p.before_image} alt={`${p.title}: antes`} widths={[400, 700]} sizes="(max-width: 760px) 90vw, 400px" /><figcaption>Antes</figcaption></figure>
+              <figure><Img src={p.after_image} alt={`${p.title}: después`} widths={[400, 700]} sizes="(max-width: 760px) 90vw, 400px" /><figcaption>Después</figcaption></figure>
+            </div>
+          </>
+        )}
+
+        {gallery.filter(Boolean).length > 0 && (
+          <>
+            <h2 class="subhead">Galería</h2>
+            <div class="gallery-grid">
+              {gallery.filter(Boolean).map((g, i) => (
+                <a href={g!.href} target="_blank" rel="noopener">
+                  <Img src={g!.src} alt={`${p.title} – foto ${i + 1}`} widths={[320, 560]} sizes="(max-width: 760px) 45vw, 260px" />
+                </a>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      <aside class="detail-aside">
+        <div class="aside-card">
+          <dl class="facts">
+            {p.client && <div><dt>Cliente</dt><dd>{p.client}</dd></div>}
+            {p.location && <div><dt>Ubicación</dt><dd>{p.location}</dd></div>}
+            {svc && <div><dt>Servicio</dt><dd><a href={`/servicios/${svc.slug}`}>{svc.name}</a></dd></div>}
+          </dl>
+          <a href={waLink(settings, svc ? waServiceText(svc.name) : undefined)} class="btn btn-dark" target="_blank" rel="noopener" data-wa><svg viewBox="0 0 24 24" class="ico ico-lg"><use href="#i-wa" /></svg>Quiero algo similar</a>
+          <a href="/contacto" class="btn btn-outline-dark">Solicitar cotización</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {others.length > 0 && (
+    <section class="section projects">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Más proyectos</p>
+            <h2>Otros trabajos realizados</h2>
+          </div>
+          <a href="/proyectos" class="link-more">Ver todos <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
+        </div>
+        <div class="projects-grid">
+          {others.map((o) => <ProjectCard project={o} services={services} sizes="(max-width: 760px) 45vw, (max-width: 1180px) 30vw, 300px" />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CtaFinal settings={settings} waText={svc ? waServiceText(svc.name) : undefined} />
+</Base>

@@ -1,0 +1,31 @@
+{
+  "name": "agroyauri-web",
+  "private": true,
+  "type": "module",
+  "version": "2.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "wrangler pages dev dist --port 8788",
+    "seed:sql": "node scripts/gen-seed-sql.mjs",
+    "test:db": "node scripts/test-db.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.1",
+    "astro": "^7.3.4",
+    "marked": "^18.0.14"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@electric-sql/pglite-socket": "^0.2.11",
+    "puppeteer-core": "^25.12.0",
+    "sharp": "^0.35.4",
+    "wrangler": "^4.136.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "esbuild@0.28.1": true,
+    "workerd@1.20260921.1": true,
+    "sharp@0.35.4": true
+  }
+}

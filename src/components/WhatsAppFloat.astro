@@ -1,0 +1,10 @@
+---
+import type { Settings } from "../lib/data";
+import { waLink, waGeneralText } from "../lib/site";
+interface Props { settings: Settings; text?: string }
+const { settings, text = waGeneralText } = Astro.props;
+---
+<a href={waLink(settings, text)} class="wa-float" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp" data-wa>
+  <svg viewBox="0 0 24 24"><use href="#i-wa" /></svg>
+  <span class="wa-float-label">¿Hablamos?</span>
+</a>

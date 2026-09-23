@@ -1,0 +1,12 @@
+---
+interface Props { eyebrow: string; title: string; href?: string; linkText?: string; as?: "h1" | "h2" }
+const { eyebrow, title, href, linkText, as = "h2" } = Astro.props;
+const H = as;
+---
+<div class="section-head">
+  <div>
+    <p class="eyebrow">{eyebrow}</p>
+    <H class="section-title">{title}</H>
+  </div>
+  {href && <a href={href} class="link-more">{linkText} <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>}
+</div>

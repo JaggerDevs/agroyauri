@@ -1,0 +1,35 @@
+---
+import Img from "./Img.astro";
+import Deco from "./Deco.astro";
+interface Props {
+  eyebrow: string;
+  /** Admite <span class="lime">…</span> */
+  title: string;
+  lead?: string | null;
+  image?: string | null;
+  crumbs: { name: string; path: string }[];
+  imagePosition?: string;
+}
+const { eyebrow, title, lead, image = "/media/site/jardin-casa.jpg", crumbs, imagePosition = "center 60%" } = Astro.props;
+---
+<section class="page-hero">
+  <Img src={image} alt="" class="hero-bg" widths={[640, 960, 1440]} sizes="100vw" loading="eager" fetchpriority="high" style={`object-position:${imagePosition}`} />
+  <Deco n={2} class="leaf-hero-l" />
+  <Deco n={5} class="leaf-hero-r" width={160} />
+  <div class="container page-hero-inner">
+    <p class="eyebrow eyebrow-light">{eyebrow}</p>
+    <h1 set:html={title} />
+    {lead && <p class="lead">{lead}</p>}
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      {crumbs.map((c, i) => (
+        <>
+          {i > 0 && <span aria-hidden="true"> &nbsp;/&nbsp; </span>}
+          {i < crumbs.length - 1 ? <a href={c.path}>{c.name}</a> : <span aria-current="page">{c.name}</span>}
+        </>
+      ))}
+    </nav>
+  </div>
+  <svg class="hero-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,58 C160,20 330,18 520,48 C720,80 860,112 1060,96 C1220,84 1340,52 1440,30 L1440,120 L0,120 Z" fill="#fbfaf4" />
+  </svg>
+</section>

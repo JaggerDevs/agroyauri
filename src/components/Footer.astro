@@ -1,0 +1,44 @@
+---
+import { Image } from "astro:assets";
+import logo from "../assets/deco/logo_blanco.png";
+import type { Settings } from "../lib/data";
+import { getSiteData } from "../lib/data";
+
+interface Props { settings: Settings }
+const { settings } = Astro.props;
+const { services } = await getSiteData();
+const c = settings.contact;
+const socials = [
+  { key: "facebook", label: "Facebook", icon: "i-fb" },
+  { key: "instagram", label: "Instagram", icon: "i-ig" },
+  { key: "linkedin", label: "LinkedIn", icon: "i-in" },
+].filter((s) => (settings.social as Record<string, string | undefined>)[s.key]);
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a href="/" class="brand brand-light"><Image src={logo} alt="" width={60} height={52} format="webp" /><span>AGROYAURI SAC</span></a>
+      <p>{c.tagline}</p>
+    </div>
+    <div class="footer-links">
+      <nav aria-label="Enlaces del pie">
+        <a href="/">Inicio</a><a href="/nosotros">Nosotros</a><a href="/servicios">Servicios</a><a href="/proyectos">Proyectos</a><a href="/productos">Productos</a><a href="/blog">Blog</a><a href="/contacto">Contacto</a>
+      </nav>
+      <p class="footer-services">
+        {services.map((s, i) => (<>{i > 0 && " · "}<a href={`/servicios/${s.slug}`}>{s.name}</a></>))}
+      </p>
+    </div>
+    <div class="footer-meta">
+      {socials.length > 0 && (
+        <div class="socials">
+          {socials.map((s) => (
+            <a href={(settings.social as Record<string, string>)[s.key]} target="_blank" rel="noopener" aria-label={s.label}><svg viewBox="0 0 24 24"><use href={`#${s.icon}`} /></svg></a>
+          ))}
+        </div>
+      )}
+      <p>{c.phones[0]} · {c.email}</p>
+      <p>© {year} {c.legal_name.replace(/\.$/, "")}. Todos los derechos reservados.<br />{c.city} - {c.region} &nbsp;|&nbsp; RUC: {c.ruc}</p>
+    </div>
+  </div>
+</footer>
