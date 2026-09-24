@@ -12,7 +12,7 @@
 - Encargo vigente (sept 2026): lista de 9 fases del usuario con **MULTI-SITE** para JaggerDev (un Supabase para varias webs). Supabase FREE y Cloudflare Pages FREE. No rehacer diseño ni migrar de framework.
 
 ## Publicación (Cloudflare Pages)
-- Proyecto `agroyauri` → **https://agroyauri.pages.dev** (cuenta Cloudflare jcorcuer4@gmail.com). Debe estar CONECTADO A GIT (`JaggerDevs/agroyauri`, rama de producción `main`, build `npm run build`, salida `dist`, vars `PUBLIC_SITE_URL` y `PUBLIC_SITE_SLUG=agroyauri`). La app "Cloudflare Workers and Pages" está instalada en la org JaggerDevs con repos seleccionados: agroyauri debe estar en la lista.
+- Proyecto `agroyauri` → **https://agroyauri.pages.dev** (cuenta Cloudflare jcorcuer4@gmail.com). CONECTADO A GIT desde el 24-09-2026 (`JaggerDevs/agroyauri`, rama de producción `main`: cada push a main se publica solo; build `npm run build`, salida `dist`, vars `PUBLIC_SITE_URL` y `PUBLIC_SITE_SLUG=agroyauri`). La app "Cloudflare Workers and Pages" está instalada en la org JaggerDevs con repos seleccionados: agroyauri debe estar en la lista.
 - (El primer proyecto se creó por Direct Upload con wrangler y se borró el 24-09-2026 para recrearlo conectado a Git: un Direct Upload no se puede convertir.)
 - Sin Supabase todavía: usa seed.json; el formulario responde 503 y el botón WhatsApp funciona.
 
