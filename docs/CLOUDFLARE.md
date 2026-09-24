@@ -7,7 +7,8 @@
    - **Build command:** `npm run build`
    - **Build output directory:** `dist`
    - **Production branch:** `main` (o `v2` mientras se prueba)
-   - **Environment variable** `NODE_VERSION` = `22` (o superior)
+   - **Root directory:** vacío
+   - **Node 22:** lo toma del archivo `.node-version` del repositorio. No pongas nada de Node en el *Build command*; si quieres forzarlo, agrega la variable de entorno `NODE_VERSION` = `22`.
 3. La carpeta `functions/` se detecta sola: `/api/lead` y `/api/rebuild` quedan como Pages Functions.
 
 ## 2. Variables de entorno
@@ -16,6 +17,7 @@
 | Variable | Tipo | Valor |
 |---|---|---|
 | `PUBLIC_SITE_URL` | texto | `https://agroyauri.pages.dev` o tu dominio |
+| `PUBLIC_SITE_SLUG` | texto | `agroyauri` (web de este proyecto en la tabla `sites`) |
 | `PUBLIC_SUPABASE_URL` | texto | URL del proyecto Supabase |
 | `PUBLIC_SUPABASE_ANON_KEY` | texto | clave anon (pública) |
 | `PUBLIC_GA_ID` | texto | opcional, `G-…` |
@@ -48,4 +50,7 @@ Si aparecen leads basura: **Turnstile → Add site** (modo *Managed*), copia sit
 - `/admin`: `noindex` y `no-store`.
 - Cabeceras de seguridad básicas (nosniff, referrer policy, frame, permissions).
 
-`_redirects` se genera en cada build (redirecciones 301 de slugs cambiados en el panel).
+`_redirects` se genera en cada build: redirecciones 301 de slugs cambiados en el panel (solo de esta web) y la regla `/admin/* /admin 200` para las rutas del panel.
+
+## 7. Otra web en el mismo Supabase (multi-site)
+Cada web tiene su propio proyecto de Cloudflare Pages (su repo, su dominio, su deploy hook) con las MISMAS claves de Supabase y su propio `PUBLIC_SITE_SLUG`. El formulario de cada despliegue solo puede crear leads de su web.

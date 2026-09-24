@@ -1,6 +1,8 @@
 // Dashboard: 1 llamada RPC para todas las métricas + 1 consulta de últimos leads.
 import { sb } from "../supabase";
 import { h, clear, loading, errorBox, friendlyError, statusBadge, sourceLabel, fmtDateTime, fmtDay, icon } from "../ui";
+import { ADMIN, go } from "../nav";
+import { siteId } from "../site";
 
 export async function renderDashboard(root: HTMLElement) {
   clear(root).append(
@@ -12,28 +14,28 @@ export async function renderDashboard(root: HTMLElement) {
   );
 
   const [stats, latest] = await Promise.all([
-    sb!.rpc("admin_lead_stats", { days: 30 }),
-    sb!.from("leads").select("id, name, service_label, district, source, created_at, status, services(name)").order("created_at", { ascending: false }).limit(8),
+    sb!.rpc("admin_lead_stats", { p_site_id: siteId(), days: 30 }),
+    sb!.from("leads").select("id, name, service_label, district, source, created_at, status, services(name)").eq("site_id", siteId()).order("created_at", { ascending: false }).limit(8),
   ]);
   root.querySelector(".loading")?.remove();
   if (stats.error) return root.append(errorBox(friendlyError(stats.error)));
-  const s = stats.data as { today: number; week: number; month: number; new: number; quotation_sent: number; won: number; daily: { day: string; n: number }[] };
+  const s = stats.data as { new: number; today: number; month: number; contacted: number; won: number; pending: number; daily: { day: string; n: number }[] };
 
   const kpi = (label: string, value: number, href: string, accent = false) =>
     h("a", { class: `kpi ${accent ? "kpi-accent" : ""}`, href }, h("span", { class: "kpi-value" }, value), h("span", { class: "kpi-label" }, label));
 
   root.append(
     h("div", { class: "kpis" },
-      kpi("Leads de hoy", s.today, "#/leads?from=today"),
-      kpi("Leads esta semana", s.week, "#/leads?from=week"),
-      kpi("Leads este mes", s.month, "#/leads?from=month"),
-      kpi("Leads nuevos (sin atender)", s.new, "#/leads?status=new", s.new > 0),
-      kpi("Cotizaciones enviadas", s.quotation_sent, "#/leads?status=quotation_sent"),
-      kpi("Clientes ganados", s.won, "#/leads?status=won")
+      kpi("Leads nuevos (sin atender)", s.new, `${ADMIN}/leads?status=new`, s.new > 0),
+      kpi("Leads de hoy", s.today, `${ADMIN}/leads?from=today`),
+      kpi("Leads del mes", s.month, `${ADMIN}/leads?from=month`),
+      kpi("Contactados", s.contacted, `${ADMIN}/leads?status=contacted`),
+      kpi("Convertidos (ganados)", s.won, `${ADMIN}/leads?status=won`),
+      kpi("Pendientes (en proceso)", s.pending, `${ADMIN}/leads?status=open`)
     ),
     h("section", { class: "panel" }, h("h2", null, "Leads por día (últimos 30 días)"), chart(s.daily)),
     h("section", { class: "panel" },
-      h("div", { class: "panel-head" }, h("h2", null, "Últimos leads"), h("a", { class: "btn btn-sm btn-ghost", href: "#/leads" }, "Ver todos")),
+      h("div", { class: "panel-head" }, h("h2", null, "Últimos leads"), h("a", { class: "btn btn-sm btn-ghost", href: `${ADMIN}/leads` }, "Ver todos")),
       latest.error
         ? errorBox(friendlyError(latest.error))
         : !latest.data?.length
@@ -43,8 +45,8 @@ export async function renderDashboard(root: HTMLElement) {
                 h("thead", null, h("tr", null, ...["Nombre", "Servicio", "Distrito", "Origen", "Fecha", "Estado"].map((t) => h("th", null, t)))),
                 h("tbody", null,
                   ...(latest.data as any[]).map((l) =>
-                    h("tr", { class: "row-link", onclick: () => (location.hash = `#/leads/${l.id}`) },
-                      h("td", { "data-label": "Nombre" }, h("a", { href: `#/leads/${l.id}` }, l.name)),
+                    h("tr", { class: "row-link", onclick: (e: Event) => { if ((e.target as HTMLElement).tagName !== "A") go(`${ADMIN}/leads/${l.id}`); } },
+                      h("td", { "data-label": "Nombre" }, h("a", { href: `${ADMIN}/leads/${l.id}` }, l.name)),
                       h("td", { "data-label": "Servicio" }, l.services?.name ?? l.service_label ?? "—"),
                       h("td", { "data-label": "Distrito" }, l.district ?? "—"),
                       h("td", { "data-label": "Origen" }, sourceLabel(l.source)),

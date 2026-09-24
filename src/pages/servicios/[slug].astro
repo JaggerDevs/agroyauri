@@ -7,7 +7,7 @@ import ServiceCard from "../../components/ServiceCard.astro";
 import ContactSection from "../../components/ContactSection.astro";
 import { getSiteData, type Service } from "../../lib/data";
 import { breadcrumbs, service as serviceLd } from "../../lib/schema";
-import { md, waLink, waServiceText, waProductText, telHref, serviceImagePosition, serviceSections, seoTitle, seoDescription } from "../../lib/site";
+import { md, formatSoles, servicePrice, waLink, waServiceText, waProductText, telHref, serviceImagePosition, serviceSections, seoTitle, seoDescription } from "../../lib/site";
 
 export async function getStaticPaths() {
   const { services } = await getSiteData();
@@ -38,6 +38,7 @@ const steps = category
       { t: "Ejecutamos el trabajo", d: "Nuestro equipo realiza el servicio y te acompaña con el seguimiento." },
     ];
 const badges = category ? ["Productos de alta calidad", "Asesoría por WhatsApp"] : ["Cotización sin compromiso", "Viviendas, condominios y empresas"];
+const price = servicePrice(s);
 const waText = waServiceText(s.name);
 const phones = settings.contact.phones;
 const path = `/servicios/${s.slug}`;
@@ -100,7 +101,9 @@ const description = s.seo_description || seoDescription([s.short_description, `S
         <aside class="detail-aside">
           <div class="aside-card aside-quote">
             <h2 class="aside-title">¿Te interesa este servicio?</h2>
-            <p>El costo depende del área y del alcance del trabajo. Escríbenos y te enviamos una cotización sin compromiso.</p>
+            {price
+              ? <p class="aside-price">{price}</p>
+              : <p>El costo depende del área y del alcance del trabajo. Escríbenos y te enviamos una cotización sin compromiso.</p>}
             <a href={waLink(settings, waText)} class="btn btn-dark" target="_blank" rel="noopener" data-wa><svg viewBox="0 0 24 24" class="ico ico-lg"><use href="#i-wa" /></svg>Cotizar por WhatsApp</a>
             <a href="#contacto" class="btn btn-outline-dark">Llenar formulario</a>
             {phones.length > 0 && (
@@ -153,7 +156,12 @@ const description = s.seo_description || seoDescription([s.short_description, `S
               <Img src={p.image_url} alt={p.name} widths={[300, 480, 640]} sizes="(max-width: 760px) 45vw, (max-width: 1180px) 30vw, 290px" />
               <div class="body">
                 <h3>{p.name}</h3>
-                {!p.available && <div class="product-meta"><span class="tag off">Agotado</span></div>}
+                {(p.show_price && p.price !== null) || !p.available ? (
+                  <div class="product-meta">
+                    {p.show_price && p.price !== null && <span class="product-price">{formatSoles(p.price)}{p.price_unit ? ` / ${p.price_unit}` : ""}</span>}
+                    {!p.available && <span class="tag off">Agotado</span>}
+                  </div>
+                ) : null}
                 {p.description && <p>{p.description}</p>}
                 <a href={waLink(settings, waProductText(p.name))} class="btn btn-dark" target="_blank" rel="noopener" data-wa><svg viewBox="0 0 24 24" class="ico"><use href="#i-wa" /></svg>Consultar<span class="hide-sm">&nbsp;por WhatsApp</span></a>
               </div>

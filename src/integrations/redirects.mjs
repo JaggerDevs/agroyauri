@@ -12,7 +12,8 @@ export default function redirects({ env }) {
         const url = env.PUBLIC_SUPABASE_URL;
         const key = env.PUBLIC_SUPABASE_ANON_KEY;
         if (url && key) {
-          const res = await fetch(`${url}/rest/v1/redirects?select=from_path,to_path`, {
+          const slug = encodeURIComponent(env.PUBLIC_SITE_SLUG || "agroyauri");
+          const res = await fetch(`${url}/rest/v1/redirects?select=from_path,to_path,sites!inner(slug)&sites.slug=eq.${slug}`, {
             headers: { apikey: key, Authorization: `Bearer ${key}` },
           });
           if (!res.ok) throw new Error(`Supabase redirects: HTTP ${res.status}`);
@@ -25,6 +26,8 @@ export default function redirects({ env }) {
         const lines = [
           "# Generado en el build — no editar a mano",
           "/nosotros/ /nosotros 301",
+          // Panel: /admin/leads, /admin/leads/<id>… los resuelve el JS de /admin.
+          "/admin/* /admin 200",
           ...rows.filter((r) => r.from_path !== r.to_path).map((r) => `${r.from_path} ${r.to_path} 301`),
         ];
         writeFileSync(fileURLToPath(new URL("_redirects", dir)), lines.join("\n") + "\n");

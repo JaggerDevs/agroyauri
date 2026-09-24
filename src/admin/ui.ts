@@ -92,28 +92,27 @@ export const fmtDateTime = (s?: string | null) => (s ? dtf.format(new Date(s)) :
 export const fmtDay = (s: string) => df.format(new Date(`${s}T12:00:00-05:00`));
 export const soles = (n: number | null | undefined) => (n === null || n === undefined ? "—" : `S/ ${new Intl.NumberFormat("es-PE").format(n)}`);
 
+// Valores de la base (lógica) → texto mostrado. La BD nunca guarda el texto traducido.
 export const STATUS: Record<string, string> = {
   new: "Nuevo",
   contacted: "Contactado",
-  quotation_sent: "Cotización enviada",
-  negotiating: "Negociando",
+  qualified: "Calificado",
+  quoted: "Cotizado",
   won: "Ganado",
   lost: "Perdido",
 };
 export const statusBadge = (s: string) => h("span", { class: `badge st-${s}` }, STATUS[s] ?? s);
 
 const SOURCES: Record<string, string> = {
-  directo: "Directo",
-  "google-organico": "Google orgánico",
-  "bing-organico": "Bing orgánico",
-  google: "Google Ads / Google",
+  website: "Web",
+  whatsapp: "WhatsApp",
+  google: "Google",
+  google_ads: "Google Ads",
   facebook: "Facebook",
   instagram: "Instagram",
-  meta: "Meta Ads",
-  tiktok: "TikTok",
-  linkedin: "LinkedIn",
+  meta_ads: "Meta Ads",
 };
-export const sourceLabel = (s?: string | null) => (!s ? "—" : SOURCES[s] ?? s.replace(/^referido:/, "Referido: "));
+export const sourceLabel = (s?: string | null) => (!s ? "—" : SOURCES[s] ?? s);
 export const SOURCE_OPTIONS = Object.entries(SOURCES);
 
 /** Slug limpio para URLs: "Riego Tecnificado Lima" → "riego-tecnificado-lima" */

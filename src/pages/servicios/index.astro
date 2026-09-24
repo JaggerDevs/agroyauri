@@ -5,7 +5,7 @@ import Img from "../../components/Img.astro";
 import CtaFinal from "../../components/CtaFinal.astro";
 import { getSiteData } from "../../lib/data";
 import { breadcrumbs } from "../../lib/schema";
-import { serviceImagePosition } from "../../lib/site";
+import { serviceImagePosition, servicePrice } from "../../lib/site";
 
 const { settings, services } = await getSiteData();
 const crumbs = [{ name: "Inicio", path: "/" }, { name: "Servicios", path: "/servicios" }];
@@ -42,6 +42,7 @@ const itemList = {
             <div class="body">
               <h2 class="card-h">{s.icon && <svg class="svc-ico" aria-hidden="true"><use href={`#svc-${s.icon}`} /></svg>}{s.name}</h2>
               {s.short_description && <p>{s.short_description}</p>}
+              {servicePrice(s) && <span class="card-price">{servicePrice(s)}</span>}
               <span class="card-more">Ver servicio <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></span>
             </div>
           </article>

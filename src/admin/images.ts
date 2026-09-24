@@ -1,6 +1,7 @@
 // Subida de imágenes: se redimensionan y comprimen EN EL NAVEGADOR (WebP ≤1600px)
 // antes de subirlas a Supabase Storage. Nunca se sube una foto de 10 MB.
 import { sb } from "./supabase";
+import { siteId } from "./site";
 
 const MAX_INPUT = 20 * 1024 * 1024; // archivo original aceptado
 const MAX_OUTPUT = 4.5 * 1024 * 1024; // límite del bucket: 5 MB
@@ -32,7 +33,8 @@ export async function compressImage(file: File, maxW = 1600, quality = 0.82): Pr
 export async function uploadImage(bucket: "projects" | "products" | "blog", file: File, prefix = ""): Promise<string> {
   const blob = await compressImage(file);
   const d = new Date();
-  const path = `${prefix ? prefix.replace(/[^a-z0-9-]/g, "") + "/" : ""}${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}-${crypto.randomUUID().slice(0, 8)}.webp`;
+  // Cada web en su carpeta: <site_id>/<sección>/archivo.webp (lo exige la política de Storage).
+  const path = `${siteId()}/${prefix ? prefix.replace(/[^a-z0-9-]/g, "") + "/" : ""}${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}-${crypto.randomUUID().slice(0, 8)}.webp`;
   const { error } = await sb!.storage.from(bucket).upload(path, blob, { contentType: "image/webp", cacheControl: "31536000", upsert: false });
   if (error) throw new Error(error.message);
   return sb!.storage.from(bucket).getPublicUrl(path).data.publicUrl;

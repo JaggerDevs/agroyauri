@@ -1,5 +1,5 @@
-// Panel /admin: login con Supabase Auth, verificación de rol y enrutado por hash.
-import { sb, configured } from "./supabase";
+// Panel /admin: login con Supabase Auth, webs (sites) del usuario y rutas /admin/<sección>.
+import { sb, configured, SITE_SLUG } from "./supabase";
 import { h, clear, icon, toast, errorBox, friendlyError, loading } from "./ui";
 import { pending, publish } from "./publish";
 import { ENTITIES } from "./entities";
@@ -8,6 +8,8 @@ import { renderDashboard } from "./views/dashboard";
 import { renderLeads, renderLead } from "./views/leads";
 import { renderPrices } from "./views/prices";
 import { renderSettings } from "./views/settings";
+import { ADMIN, go } from "./nav";
+import { setSites, sites, site, selectSite, type Site } from "./site";
 
 const app = document.getElementById("app")!;
 
@@ -59,12 +61,18 @@ let adminName = "";
 
 function renderShell() {
   const nav = h("nav", { class: "side-nav", "aria-label": "Panel" },
-    ...MENU.map((m) => h("a", { href: `#/${m.key}`, "data-key": m.key }, icon(m.icon), h("span", null, m.label)))
+    ...MENU.map((m) => h("a", { href: `${ADMIN}/${m.key}`, "data-key": m.key }, icon(m.icon), h("span", null, m.label)))
   );
+  // Selector de web: solo si el usuario administra más de una (p. ej. super_admin).
+  const siteSel = sites().length > 1
+    ? h("select", { class: "input site-select", "aria-label": "Web", onchange: (e: Event) => selectSite((e.target as HTMLSelectElement).value) },
+        ...sites().map((s) => h("option", { value: s.id, selected: s.id === site().id }, s.name)))
+    : h("span", { class: "site-name" }, site().name);
   const publishBtn = h("button", { class: "btn btn-publish", type: "button", hidden: true }, icon("i-upload"), h("span", null, "Publicar cambios"));
   const pendingInfo = h("span", { class: "pending-info", hidden: true });
   const refreshPending = () => {
-    const p = pending();
+    // Este despliegue solo puede publicar SU web; las demás se publican desde su propio panel.
+    const p = site().slug === SITE_SLUG ? pending() : [];
     publishBtn.hidden = p.length === 0;
     pendingInfo.hidden = p.length === 0;
     pendingInfo.textContent = p.length ? `Cambios sin publicar: ${p.join(", ")}` : "";
@@ -76,21 +84,22 @@ function renderShell() {
   });
   window.addEventListener("pending-changed", refreshPending);
   window.addEventListener("storage", refreshPending);
+  window.addEventListener("site-changed", () => { refreshPending(); route(); });
 
   const menuBtn = h("button", { class: "menu-btn", type: "button", "aria-label": "Menú", onclick: () => document.body.classList.toggle("nav-open") }, h("span"), h("span"), h("span"));
   content = h("main", { class: "content", id: "content", tabindex: "-1" });
   clear(app).append(
     h("div", { class: "shell" },
       h("aside", { class: "sidebar" },
-        h("a", { class: "side-brand", href: "#/dashboard" }, h("img", { src: "/favicon.png", alt: "", width: 34, height: 34 }), h("span", null, "AGROYAURI")),
+        h("a", { class: "side-brand", href: `${ADMIN}/dashboard` }, h("img", { src: "/favicon.png", alt: "", width: 34, height: 34 }), h("span", null, "PANEL WEB")),
         nav,
         h("div", { class: "side-foot" },
           h("a", { href: "/", target: "_blank", rel: "noopener" }, icon("i-external"), "Ver la web"),
-          h("button", { type: "button", onclick: async () => { await sb!.auth.signOut(); location.hash = ""; renderLogin("Sesión cerrada."); } }, icon("i-logout"), "Cerrar sesión")
+          h("button", { type: "button", onclick: async () => { await sb!.auth.signOut(); history.replaceState(null, "", ADMIN); renderLogin("Sesión cerrada."); } }, icon("i-logout"), "Cerrar sesión")
         )
       ),
       h("div", { class: "main-col" },
-        h("header", { class: "topbar" }, menuBtn, h("span", { class: "hello" }, `Hola, ${adminName}`), pendingInfo, publishBtn),
+        h("header", { class: "topbar" }, menuBtn, siteSel, h("span", { class: "hello" }, `Hola, ${adminName}`), pendingInfo, publishBtn),
         content
       )
     )
@@ -105,13 +114,12 @@ function renderShell() {
 
 // ---------------------------------------------------------------- router
 async function route() {
-  const hash = location.hash.replace(/^#\/?/, "") || "dashboard";
-  const [path, qs] = hash.split("?");
+  const path = location.pathname.replace(/^\/admin\/?/, "").replace(/\/+$/, "") || "dashboard";
   const [section, id] = path.split("/");
-  const params = new URLSearchParams(qs ?? "");
+  const params = new URLSearchParams(location.search);
   const active = section === "categories" ? "products" : section;
   document.querySelectorAll<HTMLAnchorElement>(".side-nav a").forEach((a) => a.classList.toggle("active", a.dataset.key === active));
-  document.title = `${MENU.find((m) => m.key === active)?.label ?? "Panel"} · Admin AGROYAURI`;
+  document.title = `${MENU.find((m) => m.key === active)?.label ?? "Panel"} · ${site().name}`;
 
   try {
     if (section === "dashboard") return await renderDashboard(content);
@@ -125,8 +133,8 @@ async function route() {
       if (section === "products" || section === "categories") {
         content.querySelector(".page-head")?.after(
           h("div", { class: "tabs" },
-            h("a", { href: "#/products", class: section === "products" ? "active" : "" }, "Productos"),
-            h("a", { href: "#/categories", class: section === "categories" ? "active" : "" }, "Categorías")
+            h("a", { href: `${ADMIN}/products`, class: section === "products" ? "active" : "" }, "Productos"),
+            h("a", { href: `${ADMIN}/categories`, class: section === "categories" ? "active" : "" }, "Categorías")
           )
         );
       }
@@ -151,15 +159,34 @@ async function boot() {
   const { data } = await sb!.auth.getSession();
   if (!data.session) return renderLogin();
 
-  // Solo perfiles con role = 'admin' entran (RLS también lo exige en la base de datos).
-  const { data: profile, error } = await sb!.from("profiles").select("role, full_name").eq("id", data.session.user.id).maybeSingle();
-  if (error || profile?.role !== "admin") {
+  // Rol + webs asignadas. RLS vuelve a exigir lo mismo en cada consulta.
+  const [{ data: profile, error }, sitesR] = await Promise.all([
+    sb!.from("profiles").select("role, full_name").eq("id", data.session.user.id).maybeSingle(),
+    sb!.rpc("admin_sites"),
+  ]);
+  const list = (sitesR.data ?? []) as Site[];
+  if (error || sitesR.error || !profile || profile.role === "pending" || list.length === 0) {
     await sb!.auth.signOut();
-    return renderLogin(error ? friendlyError(error) : "Tu cuenta no tiene permisos de administrador.");
+    return renderLogin(error || sitesR.error ? friendlyError(error ?? sitesR.error) : "Tu cuenta no tiene permisos para administrar ninguna web.");
   }
+  setSites(list, SITE_SLUG);
   adminName = profile.full_name || data.session.user.email || "Admin";
+
+  // Enlaces antiguos /admin#/leads → /admin/leads
+  if (location.hash.startsWith("#/")) history.replaceState(null, "", `${ADMIN}/${location.hash.slice(2)}`);
   renderShell();
-  window.onhashchange = route;
+  window.addEventListener("popstate", route);
+  window.addEventListener("admin:navigate", route);
+  // Enlaces internos del panel: navegación sin recargar.
+  document.addEventListener("click", (e) => {
+    const a = (e.target as HTMLElement).closest("a");
+    if (!a || a.target || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const href = a.getAttribute("href") ?? "";
+    if (href === ADMIN || href.startsWith(`${ADMIN}/`) || href.startsWith(`${ADMIN}?`)) {
+      e.preventDefault();
+      go(href);
+    }
+  });
   route();
 }
 

@@ -4,7 +4,9 @@
 //
 // Uso:  POSTGREST_BIN=C:\ruta\postgrest.exe node scripts/local-supabase.mjs
 //   API:       http://127.0.0.1:54321   (igual que `supabase start`)
-//   Admin:     admin@agroyauri.test / admin12345
+//   Usuarios:  super@jaggerdev.test (super_admin) · admin@agroyauri.test (admin Agroyauri)
+//              otro@otra-empresa.test (admin de otra web) · intruso@agroyauri.test (sin permisos)
+//              Contraseña: la parte antes de @ + "12345" (p. ej. admin12345)
 //   Imprime las claves anon / service_role locales (NO son de producción).
 import { PGlite } from "@electric-sql/pglite";
 import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
@@ -43,13 +45,21 @@ const SERVICE = sign({ role: "service_role", iss: "local", iat: now(), exp: now(
 // ---------- base de datos ----------
 const db = await PGlite.create();
 await applySchema(db);
+// Multi-site: Agroyauri (del seed) + una segunda web para comprobar el aislamiento.
+const OTHER_SITE = "99999999-9999-9999-9999-999999999999";
+await db.query("insert into public.sites (id, name, slug) values ($1, 'Otra Empresa', 'otra-empresa')", [OTHER_SITE]);
+await db.query("insert into public.leads (site_id, name, phone, email, service_label, source) values ($1, 'Lead de Otra Empresa', '988888888', 'otro@cliente.test', 'Jardín', 'website')", [OTHER_SITE]);
+const AGRO_SITE = (await db.query("select id from public.sites where slug = 'agroyauri'")).rows[0].id;
 const USERS = [
-  { id: "11111111-1111-1111-1111-111111111111", email: "admin@agroyauri.test", password: "admin12345", admin: true },
-  { id: "22222222-2222-2222-2222-222222222222", email: "intruso@agroyauri.test", password: "intruso12345", admin: false },
+  { id: "00000000-0000-0000-0000-000000000001", email: "super@jaggerdev.test", password: "super12345", role: "super_admin", name: "JaggerDev", sites: [] },
+  { id: "11111111-1111-1111-1111-111111111111", email: "admin@agroyauri.test", password: "admin12345", role: "admin", name: "Administrador Agroyauri", sites: [AGRO_SITE] },
+  { id: "33333333-3333-3333-3333-333333333333", email: "otro@otra-empresa.test", password: "otro12345", role: "admin", name: "Admin Otra Empresa", sites: [OTHER_SITE] },
+  { id: "22222222-2222-2222-2222-222222222222", email: "intruso@agroyauri.test", password: "intruso12345", role: "pending", name: "Intruso", sites: [] },
 ];
 for (const u of USERS) {
   await db.query("insert into auth.users (id, email) values ($1, $2)", [u.id, u.email]);
-  if (u.admin) await db.query("update public.profiles set role = 'admin', full_name = 'Administrador' where id = $1", [u.id]);
+  await db.query("update public.profiles set role = $2, full_name = $3 where id = $1", [u.id, u.role, u.name]);
+  for (const s of u.sites) await db.query("insert into public.site_users (site_id, user_id) values ($1, $2)", [s, u.id]);
 }
 const sock = new PGLiteSocketServer({ db, port: PG_PORT, host: "127.0.0.1" });
 await sock.start();
@@ -96,8 +106,11 @@ const session = (u) => {
   };
 };
 
-async function isAdmin(token) {
-  const r = await fetch(`http://127.0.0.1:${PGRST_PORT}/rpc/is_admin`, { method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, body: "{}" });
+// Misma regla que la política de Storage: la carpeta raíz del archivo es el site_id.
+async function canWrite(token, path) {
+  const sid = decodeURIComponent(path).split("/")[0];
+  if (!/^[0-9a-f-]{36}$/.test(sid)) return false;
+  const r = await fetch(`http://127.0.0.1:${PGRST_PORT}/rpc/can_access_site`, { method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify({ p_site_id: sid }) });
   return r.ok && (await r.json()) === true;
 }
 
@@ -151,7 +164,7 @@ createServer(async (req, res) => {
     const obj = url.pathname.match(/^\/storage\/v1\/object\/([^/]+)\/(.+)$/);
     if (obj && ["POST", "PUT"].includes(req.method)) {
       const token = bearer(req);
-      if (!["projects", "products", "blog"].includes(obj[1]) || !(await isAdmin(token))) return send(res, 403, { statusCode: "403", error: "Unauthorized", message: "new row violates row-level security policy" });
+      if (!["projects", "products", "blog"].includes(obj[1]) || !(await canWrite(token, obj[2]))) return send(res, 403, { statusCode: "403", error: "Unauthorized", message: "new row violates row-level security policy" });
       let data = await readBody(req);
       // supabase-js envía multipart/form-data: extraer el archivo (Supabase real lo hace igual)
       const m = /boundary=(.+)$/.exec(req.headers["content-type"] || "");
@@ -169,8 +182,8 @@ createServer(async (req, res) => {
     }
     const del = url.pathname.match(/^\/storage\/v1\/object\/([^/]+)$/);
     if (del && req.method === "DELETE") {
-      if (!(await isAdmin(bearer(req)))) return send(res, 403, { error: "Unauthorized" });
       const { prefixes = [] } = JSON.parse((await readBody(req)).toString() || "{}");
+      for (const p of prefixes) if (!(await canWrite(bearer(req), p))) return send(res, 403, { error: "Unauthorized" });
       for (const p of prefixes) rmSync(join(STORAGE_DIR, del[1], p), { force: true });
       return send(res, 200, prefixes.map((name) => ({ name })));
     }
@@ -190,6 +203,6 @@ createServer(async (req, res) => {
   console.log(`\nSupabase LOCAL listo en http://127.0.0.1:${API_PORT}`);
   console.log(`PUBLIC_SUPABASE_ANON_KEY=${ANON}`);
   console.log(`SUPABASE_SERVICE_ROLE_KEY=${SERVICE}`);
-  console.log("Admin: admin@agroyauri.test / admin12345 · No-admin: intruso@agroyauri.test / intruso12345\n");
+  console.log("super@jaggerdev.test / super12345 · admin@agroyauri.test / admin12345 · otro@otra-empresa.test / otro12345 · intruso@agroyauri.test / intruso12345\n");
   writeFileSync(join(tmpdir(), "agroyauri-local-keys.json"), JSON.stringify({ url: `http://127.0.0.1:${API_PORT}`, anon: ANON, service: SERVICE }));
 });

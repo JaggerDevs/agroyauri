@@ -1,5 +1,5 @@
 // Envío de leads: validación en el navegador + POST a /api/lead (valida de nuevo en servidor).
-type Attr = Partial<Record<"landing_page" | "referrer" | "utm_source" | "utm_medium" | "utm_campaign" | "utm_content" | "utm_term", string>>;
+type Attr = Partial<Record<"landing_page" | "referrer" | "utm_source" | "utm_medium" | "utm_campaign" | "utm_content" | "utm_term" | "gclid" | "fbclid", string>>;
 
 declare global {
   interface Window { turnstile?: { render: (el: Element, o: Record<string, unknown>) => string; reset: (id?: string) => void } }
@@ -70,7 +70,7 @@ function setup(form: HTMLFormElement) {
     return ok;
   }
 
-  function payload() {
+  function payload(channel: "form" | "whatsapp" = "form") {
     const f = form.elements as unknown as Record<string, HTMLInputElement>;
     const sel = form.querySelector<HTMLSelectElement>('select[name="service"]')!;
     const opt = sel.selectedOptions[0];
@@ -80,7 +80,7 @@ function setup(form: HTMLFormElement) {
       company: f.company.value.trim(),
       phone: f.phone.value.trim(),
       email: f.email.value.trim(),
-      service_id: sel.value.startsWith("plan:") ? "" : sel.value,
+      service_id: sel.value,
       service_label: opt?.dataset.label ?? "",
       district: f.district.value.trim(),
       area_m2: f.area_m2.value,
@@ -93,17 +93,20 @@ function setup(form: HTMLFormElement) {
       utm_campaign: a.utm_campaign || "",
       utm_content: a.utm_content || "",
       utm_term: a.utm_term || "",
+      gclid: a.gclid || "",
+      fbclid: a.fbclid || "",
+      channel,
       website: (form.elements.namedItem("website") as HTMLInputElement).value,
       elapsed_ms: Date.now() - startedAt,
       turnstile_token: token,
     };
   }
 
-  async function send(keepalive = false): Promise<boolean> {
+  async function send(channel: "form" | "whatsapp" = "form", keepalive = false): Promise<boolean> {
     const res = await fetch("/api/lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload()),
+      body: JSON.stringify(payload(channel)),
       keepalive,
     });
     const data = await res.json().catch(() => ({}));
@@ -160,7 +163,7 @@ function setup(form: HTMLFormElement) {
     ].filter(Boolean);
     // Se abre de inmediato (evita bloqueadores de ventanas); el lead se registra en segundo plano.
     window.open(`https://wa.me/${form.dataset.wa}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank", "noopener");
-    if (!siteKey || token) send(true).catch(() => {});
+    if (!siteKey || token) send("whatsapp", true).catch(() => {});
     setStatus("Abrimos WhatsApp con tu solicitud. ¡Gracias por escribirnos!", "ok");
     window.gtag?.("event", "generate_lead", { method: "whatsapp" });
   });
@@ -172,13 +175,6 @@ export function initLeadForms() {
     f.dataset.ready = "1";
     setup(f);
   });
-  // "Seleccionar plan" → preselecciona el plan en el formulario
-  document.querySelectorAll<HTMLAnchorElement>("[data-plan]").forEach((a) =>
-    a.addEventListener("click", () => {
-      const sel = document.querySelector<HTMLSelectElement>('form.lead-form select[name="service"]');
-      if (sel) sel.value = `plan:${a.dataset.plan}`;
-    })
-  );
 }
 
 declare global { interface Window { gtag?: (...args: unknown[]) => void } }

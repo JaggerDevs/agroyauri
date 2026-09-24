@@ -3,6 +3,8 @@ import { sb } from "./supabase";
 import { h, icon, clear, toast, confirmDialog, loading, errorBox, friendlyError, slugify, fmtDateTime } from "./ui";
 import { uploadImage, previewUrl } from "./images";
 import { markPending } from "./publish";
+import { ADMIN, go } from "./nav";
+import { siteId } from "./site";
 
 export type FieldType = "text" | "textarea" | "markdown" | "slug" | "number" | "money" | "bool" | "select" | "image" | "gallery" | "datetime";
 export interface Field {
@@ -44,11 +46,11 @@ export async function renderList(root: HTMLElement, e: Entity) {
   clear(root).append(
     h("div", { class: "page-head" },
       h("h1", null, e.title),
-      h("a", { class: "btn btn-primary", href: `#/${e.key}/new` }, icon("i-plus"), `Nuevo ${e.singular.toLowerCase()}`)
+      h("a", { class: "btn btn-primary", href: `${ADMIN}/${e.key}/new` }, icon("i-plus"), `Nuevo ${e.singular.toLowerCase()}`)
     ),
     loading()
   );
-  let q = sb!.from(e.table).select(e.listSelect).limit(500);
+  let q = sb!.from(e.table).select(e.listSelect).eq("site_id", siteId()).limit(500);
   for (const o of e.order) q = q.order(o.column, { ascending: o.ascending ?? true });
   const { data, error } = await q;
   root.querySelector(".loading")?.remove();
@@ -89,7 +91,7 @@ export async function renderList(root: HTMLElement, e: Entity) {
         ...e.columns.map((c) => h("td", { "data-label": c.label }, c.get(row) ?? "—")),
         e.toggle ? h("td", { class: "td-toggle" }, toggle, h("span", { class: "switch-label" }, row[e.toggle.field] ? e.toggle.on : e.toggle.off)) : null,
         h("td", { class: "td-actions" },
-          h("a", { class: "btn btn-sm btn-ghost", href: `#/${e.key}/${row.id}` }, "Editar"),
+          h("a", { class: "btn btn-sm btn-ghost", href: `${ADMIN}/${e.key}/${row.id}` }, "Editar"),
           e.publicPath && row.slug ? h("a", { class: "btn btn-sm btn-ghost", href: e.publicPath(row.slug), target: "_blank", rel: "noopener", title: "Ver en la web" }, icon("i-external")) : null
         )
       )
@@ -109,16 +111,18 @@ export async function renderList(root: HTMLElement, e: Entity) {
 // FORMULARIO
 // ======================================================================
 const fkCache = new Map<string, Promise<[string, string][]>>();
+// Opciones de relaciones (servicio, categoría) SOLO de la web actual.
 function fkOptions(fk: { table: string; label: string }) {
-  if (!fkCache.has(fk.table)) {
+  const k = `${siteId()}:${fk.table}`;
+  if (!fkCache.has(k)) {
     fkCache.set(
-      fk.table,
-      Promise.resolve(sb!.from(fk.table).select(`id, ${fk.label}`).order(fk.label).limit(500)).then(({ data }) => (data ?? []).map((r: any) => [r.id, r[fk.label]] as [string, string]))
+      k,
+      Promise.resolve(sb!.from(fk.table).select(`id, ${fk.label}`).eq("site_id", siteId()).order(fk.label).limit(500)).then(({ data }) => (data ?? []).map((r: any) => [r.id, r[fk.label]] as [string, string]))
     );
   }
-  return fkCache.get(fk.table)!;
+  return fkCache.get(k)!;
 }
-export const invalidateFk = (table: string) => fkCache.delete(table);
+export const invalidateFk = (table: string) => fkCache.delete(`${siteId()}:${table}`);
 
 type Getter = () => unknown;
 
@@ -128,7 +132,7 @@ export async function renderForm(root: HTMLElement, e: Entity, id: string | "new
   const cols = ["id", "updated_at", ...new Set(e.fields.map((f) => f.name))].join(", ");
   let row: any = {};
   if (!isNew) {
-    const { data, error } = await sb!.from(e.table).select(cols).eq("id", id).maybeSingle();
+    const { data, error } = await sb!.from(e.table).select(cols).eq("id", id).eq("site_id", siteId()).maybeSingle();
     if (error) return clear(root).append(errorBox(friendlyError(error)));
     if (!data) return clear(root).append(errorBox("No existe este registro."));
     row = data;
@@ -314,7 +318,7 @@ export async function renderForm(root: HTMLElement, e: Entity, id: string | "new
   const delBtn = !isNew && e.canDelete ? h("button", { type: "button", class: "btn btn-danger-ghost" }, "Eliminar") : null;
   form.append(
     h("div", { class: "form-actions" },
-      h("a", { class: "btn btn-ghost", href: `#/${e.key}` }, "Volver"),
+      h("a", { class: "btn btn-ghost", href: `${ADMIN}/${e.key}` }, "Volver"),
       delBtn,
       saveBtn
     )
@@ -348,7 +352,7 @@ export async function renderForm(root: HTMLElement, e: Entity, id: string | "new
     saveBtn.disabled = true;
     saveBtn.textContent = "Guardando…";
     const res = isNew
-      ? await sb!.from(e.table).insert(payload).select("id").single()
+      ? await sb!.from(e.table).insert({ ...payload, site_id: siteId() }).select("id").single()
       : await sb!.from(e.table).update(payload).eq("id", id).select("id").single();
     saveBtn.disabled = false;
     saveBtn.textContent = isNew ? "Crear" : "Guardar cambios";
@@ -357,15 +361,16 @@ export async function renderForm(root: HTMLElement, e: Entity, id: string | "new
     if (slugChanged && !e.publicPath!(originalSlug!).includes("#")) {
       const from = e.publicPath!(originalSlug!);
       const to = e.publicPath!(String(payload.slug));
-      await sb!.from("redirects").delete().eq("from_path", to); // la nueva URL no debe redirigir
-      await sb!.from("redirects").update({ to_path: to }).eq("to_path", from); // evita cadenas de redirección
-      const r = await sb!.from("redirects").upsert({ from_path: from, to_path: to }, { onConflict: "from_path" });
+      const sid = siteId();
+      await sb!.from("redirects").delete().eq("site_id", sid).eq("from_path", to); // la nueva URL no debe redirigir
+      await sb!.from("redirects").update({ to_path: to }).eq("site_id", sid).eq("to_path", from); // evita cadenas de redirección
+      const r = await sb!.from("redirects").upsert({ site_id: sid, from_path: from, to_path: to }, { onConflict: "site_id,from_path" });
       if (r.error) toast(`Guardado, pero no se creó la redirección: ${friendlyError(r.error)}`, "err", 8000);
     }
     if (e.table === "services" || e.table === "categories") invalidateFk(e.table);
     markPending(e.title);
     toast(isNew ? `${e.singular} creado.` : "Cambios guardados.");
-    location.hash = `#/${e.key}`;
+    go(`${ADMIN}/${e.key}`);
   });
 
   delBtn?.addEventListener("click", async () => {
@@ -382,13 +387,13 @@ export async function renderForm(root: HTMLElement, e: Entity, id: string | "new
     if (e.table === "categories") invalidateFk("categories");
     markPending(e.title);
     toast(`${e.singular} eliminado.`);
-    location.hash = `#/${e.key}`;
+    go(`${ADMIN}/${e.key}`);
   });
 
   clear(root).append(
     h("div", { class: "page-head" },
       h("div", null,
-        h("a", { class: "back", href: `#/${e.key}` }, "← ", e.title),
+        h("a", { class: "back", href: `${ADMIN}/${e.key}` }, "← ", e.title),
         h("h1", null, isNew ? `Nuevo ${e.singular.toLowerCase()}` : String(row[e.nameField] ?? e.singular))
       ),
       !isNew && e.publicPath && row.slug ? h("a", { class: "btn btn-ghost", href: e.publicPath(row.slug), target: "_blank", rel: "noopener" }, "Ver en la web ", icon("i-external")) : null

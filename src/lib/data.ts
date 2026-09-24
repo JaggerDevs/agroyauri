@@ -116,6 +116,8 @@ export type SiteData = {
 
 const url = import.meta.env.PUBLIC_SUPABASE_URL;
 const key = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+/** Web que genera este build (tabla public.sites). */
+export const SITE_SLUG = import.meta.env.PUBLIC_SITE_SLUG || "agroyauri";
 
 function fromSeed(): SiteData {
   const s = expandSeed(rawSeed as any);
@@ -146,27 +148,36 @@ async function fromSupabase(): Promise<SiteData> {
     return r.data as T;
   };
 
+  // Multi-site: todo se filtra por la web de este build.
+  const siteR = await sb.from("sites").select("id").eq("slug", SITE_SLUG).eq("is_active", true).maybeSingle();
+  const site = ok(siteR, "sites") as { id: string } | null;
+  if (!site) throw new Error(`Supabase: no existe una web activa con slug "${SITE_SLUG}" (PUBLIC_SITE_SLUG).`);
+
   const [settingsR, servicesR, projectsR, categoriesR, productsR, postsR] = await Promise.all([
-    sb.from("site_settings").select("key, value"),
+    sb.from("site_settings").select("key, value").eq("site_id", site.id),
     sb
       .from("services")
       .select("id, name, slug, short_description, description, image_url, icon, price_type, price_from, price_unit, show_price, show_in_home, sort_order, seo_title, seo_description, updated_at")
+      .eq("site_id", site.id)
       .eq("is_active", true)
       .order("sort_order"),
     sb
       .from("projects")
       .select("id, title, slug, client, location, service_id, short_description, description, featured_image, gallery, before_image, after_image, is_featured, sort_order, seo_title, seo_description, updated_at")
+      .eq("site_id", site.id)
       .eq("is_published", true)
       .order("sort_order"),
-    sb.from("categories").select("id, name, slug, sort_order").order("sort_order"),
+    sb.from("categories").select("id, name, slug, sort_order").eq("site_id", site.id).order("sort_order"),
     sb
       .from("products")
       .select("id, name, slug, category_id, description, image_url, price, price_unit, show_price, available, featured, sort_order, updated_at")
+      .eq("site_id", site.id)
       .eq("is_published", true)
       .order("sort_order"),
     sb
       .from("blog_posts")
       .select("id, title, slug, excerpt, content, featured_image, author, published_at, seo_title, seo_description, updated_at")
+      .eq("site_id", site.id)
       .eq("is_published", true)
       .lte("published_at", new Date().toISOString())
       .order("published_at", { ascending: false }),

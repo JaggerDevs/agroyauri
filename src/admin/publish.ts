@@ -4,19 +4,22 @@
 import { accessToken } from "./supabase";
 import { toast } from "./ui";
 
-const KEY = "ay_pending_changes";
+import { siteId } from "./site";
+
+// Cambios pendientes por web.
+const key = () => `ay_pending_changes:${siteId()}`;
 
 export function markPending(what: string) {
   try {
-    const list: string[] = JSON.parse(localStorage.getItem(KEY) || "[]");
+    const list: string[] = JSON.parse(localStorage.getItem(key()) || "[]");
     if (!list.includes(what)) list.push(what);
-    localStorage.setItem(KEY, JSON.stringify(list.slice(-20)));
+    localStorage.setItem(key(), JSON.stringify(list.slice(-20)));
   } catch {}
   window.dispatchEvent(new CustomEvent("pending-changed"));
 }
 
 export function pending(): string[] {
-  try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; }
+  try { return JSON.parse(localStorage.getItem(key()) || "[]"); } catch { return []; }
 }
 
 export async function publish(): Promise<boolean> {
@@ -27,7 +30,7 @@ export async function publish(): Promise<boolean> {
     toast(data.error || "No se pudo iniciar la publicación.", "err", 6000);
     return false;
   }
-  try { localStorage.removeItem(KEY); } catch {}
+  try { localStorage.removeItem(key()); } catch {}
   window.dispatchEvent(new CustomEvent("pending-changed"));
   toast("Publicando… la web se actualizará en 1–3 minutos.", "ok", 6000);
   return true;

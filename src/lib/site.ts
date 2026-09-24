@@ -4,6 +4,18 @@ import { marked } from "marked";
 
 export const SITE_NAME = "AGROYAURI SAC";
 
+const soles = new Intl.NumberFormat("es-PE", { maximumFractionDigits: 2 });
+export const formatSoles = (n: number) => `S/ ${soles.format(n)}`;
+
+/** Texto de precio de un servicio, o null si el administrador no lo muestra (show_price). */
+export function servicePrice(s: Pick<Service, "price_type" | "price_from" | "price_unit" | "show_price">): string | null {
+  if (!s.show_price || s.price_type === "quote" || s.price_from === null) return null;
+  const base = formatSoles(s.price_from);
+  if (s.price_type === "from") return `Desde ${base}${s.price_unit ? ` / ${s.price_unit}` : ""}`;
+  if (s.price_type === "per_m2") return `${base} por m²`;
+  return `${base}${s.price_unit ? ` / ${s.price_unit}` : ""}`;
+}
+
 /** Encuadre aprobado de la foto de cada servicio (según su ícono). */
 const servicePositions: Record<string, string> = { plagas: "50% 70%", saneamiento: "70% 40%", insumos: "50% 40%" };
 export const serviceImagePosition = (s: Pick<Service, "icon">) => servicePositions[s.icon ?? ""] ?? "50% 50%";

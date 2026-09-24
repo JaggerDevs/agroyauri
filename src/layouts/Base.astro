@@ -73,6 +73,7 @@ const GSC = import.meta.env.PUBLIC_GSC_VERIFICATION;
       if (!sessionStorage.getItem("ay_attr")) {
         var q = new URLSearchParams(location.search), a = { landing_page: location.pathname, referrer: document.referrer || "" };
         ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(function (k) { if (q.get(k)) a[k] = q.get(k); });
+        ["gclid", "fbclid"].forEach(function (k) { if (q.get(k)) a[k] = "1"; });
         sessionStorage.setItem("ay_attr", JSON.stringify(a));
       }
     } catch (e) {}

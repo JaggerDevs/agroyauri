@@ -2,6 +2,8 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const url = import.meta.env.PUBLIC_SUPABASE_URL;
 const key = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+/** Web de este despliegue (la que se publica con "Publicar cambios"). */
+export const SITE_SLUG = import.meta.env.PUBLIC_SITE_SLUG || "agroyauri";
 
 /** Cliente del panel: clave ANÓNIMA pública + sesión del administrador. RLS protege los datos. */
 export const sb: SupabaseClient | null =

@@ -2,10 +2,11 @@
 import { sb } from "../supabase";
 import { h, clear, loading, errorBox, friendlyError, toast } from "../ui";
 import { markPending } from "../publish";
+import { siteId } from "../site";
 
 export async function renderSettings(root: HTMLElement) {
   clear(root).append(h("div", { class: "page-head" }, h("h1", null, "Configuración")), loading());
-  const { data, error } = await sb!.from("site_settings").select("key, value").in("key", ["contact", "social"]);
+  const { data, error } = await sb!.from("site_settings").select("key, value").eq("site_id", siteId()).in("key", ["contact", "social"]);
   root.querySelector(".loading")?.remove();
   if (error) return root.append(errorBox(friendlyError(error)));
   const kv = Object.fromEntries((data ?? []).map((r: any) => [r.key, r.value]));
@@ -65,7 +66,9 @@ export async function renderSettings(root: HTMLElement) {
     };
     const social = { facebook: f.facebook.value.trim(), instagram: f.instagram.value.trim(), linkedin: f.linkedin.value.trim() };
     save.disabled = true;
-    const { error } = await sb!.from("site_settings").upsert([{ key: "contact", value: contact }, { key: "social", value: social }]);
+    const { error } = await sb!
+      .from("site_settings")
+      .upsert([{ site_id: siteId(), key: "contact", value: contact }, { site_id: siteId(), key: "social", value: social }], { onConflict: "site_id,key" });
     save.disabled = false;
     if (error) return toast(friendlyError(error), "err");
     markPending("Configuración");

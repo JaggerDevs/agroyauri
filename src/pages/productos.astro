@@ -5,7 +5,7 @@ import Img from "../components/Img.astro";
 import CtaFinal from "../components/CtaFinal.astro";
 import { getSiteData } from "../lib/data";
 import { breadcrumbs } from "../lib/schema";
-import { waLink, waProductText } from "../lib/site";
+import { formatSoles, waLink, waProductText } from "../lib/site";
 
 const { settings, categories, products } = await getSiteData();
 const crumbs = [{ name: "Inicio", path: "/" }, { name: "Productos", path: "/productos" }];
@@ -48,6 +48,7 @@ const groups = [
                 <div class="body">
                   <h3>{p.name}</h3>
                   <div class="product-meta">
+                    {p.show_price && p.price !== null && <span class="product-price">{formatSoles(p.price)}{p.price_unit ? ` / ${p.price_unit}` : ""}</span>}
                     {p.featured && <span class="tag">Destacado</span>}
                     {!p.available && <span class="tag off">Agotado</span>}
                   </div>
