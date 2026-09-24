@@ -12,6 +12,12 @@
 - Precios: el panel los edita; la web solo los muestra si `show_price = true` (hoy todos en false → "Solicitar cotización").
 - Encargo vigente (sept 2026): lista de 9 fases del usuario con **MULTI-SITE** para JaggerDev (un Supabase para varias webs). Supabase FREE y Cloudflare Pages FREE. No rehacer diseño ni migrar de framework.
 
+## Publicación actual (24-09-2026)
+- **https://agroyauri.pages.dev** = proyecto Cloudflare Pages `agroyauri` (cuenta jcorcuer4@gmail.com), tipo **Direct Upload** (creado con wrangler, NO conectado a Git). Rama de producción `v2`. Sin Supabase todavía (usa seed.json; formulario responde 503 y el botón WhatsApp funciona).
+- Para actualizarlo: `PUBLIC_SITE_URL=https://agroyauri.pages.dev npm run build && npx wrangler pages deploy dist --project-name agroyauri --branch v2` (en Linux wrangler necesita red fuera del sandbox).
+- Ojo: un proyecto Direct Upload no se puede pasar a integración Git después. Para el botón "Publicar cambios" (deploy hook) hará falta un proyecto conectado a Git o un GitHub Action que haga `wrangler pages deploy`.
+- https://neechan15.github.io/agroyauri/ sigue sirviendo la v1 (rama `main`).
+
 ## Multi-site (migración `20260924000001_multisite_crm.sql`)
 - `sites` (Agroyauri = slug `agroyauri`), `site_users` (usuario ↔ web), `profiles.role`: pending | admin | super_admin.
 - TODO el contenido y los leads tienen `site_id`; slugs únicos por (site_id, slug); FK compuestas (service_id, site_id) / (category_id, site_id).
