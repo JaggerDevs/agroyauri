@@ -4,7 +4,6 @@ import Img from "../components/Img.astro";
 import Deco from "../components/Deco.astro";
 import ServiceCard from "../components/ServiceCard.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import Plans from "../components/Plans.astro";
 import ContactSection from "../components/ContactSection.astro";
 import { getSiteData } from "../lib/data";
 import { organization } from "../lib/schema";
@@ -90,7 +89,6 @@ const carousel = (featured.length >= 3 ? featured : projects).slice(0, 8);
     </div>
   </section>
 
-  <Plans settings={settings} />
   <ContactSection settings={settings} services={services} />
 </Base>
 

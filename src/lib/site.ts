@@ -4,16 +4,25 @@ import { marked } from "marked";
 
 export const SITE_NAME = "AGROYAURI SAC";
 
-const soles = new Intl.NumberFormat("es-PE", { maximumFractionDigits: 2 });
-export const formatSoles = (n: number) => `S/ ${soles.format(n)}`;
+/** Encuadre aprobado de la foto de cada servicio (según su ícono). */
+const servicePositions: Record<string, string> = { plagas: "50% 70%", saneamiento: "70% 40%", insumos: "50% 40%" };
+export const serviceImagePosition = (s: Pick<Service, "icon">) => servicePositions[s.icon ?? ""] ?? "50% 50%";
 
-/** Texto de precio de un servicio o null si no debe mostrarse. */
-export function servicePrice(s: Pick<Service, "price_type" | "price_from" | "price_unit" | "show_price">): string | null {
-  if (!s.show_price || s.price_type === "quote" || s.price_from === null) return null;
-  const base = formatSoles(s.price_from);
-  if (s.price_type === "from") return `Desde ${base}${s.price_unit ? ` / ${s.price_unit}` : ""}`;
-  if (s.price_type === "per_m2") return `${base} por m²`;
-  return `${base}${s.price_unit ? ` / ${s.price_unit}` : ""}`;
+/**
+ * Divide la descripción Markdown de un servicio en introducción + secciones "## Título".
+ * Una sección cuyo cuerpo es solo una lista "- ítem" se devuelve como `items` (se muestra en tarjetas).
+ */
+export function serviceSections(src: string | null | undefined) {
+  const parts = (src ?? "").split(/^##\s+(.+)$/m);
+  const intro = parts[0].trim();
+  const sections: { title: string; items: string[] | null; body: string }[] = [];
+  for (let i = 1; i < parts.length; i += 2) {
+    const body = (parts[i + 1] ?? "").trim();
+    const lines = body.split("\n").map((l) => l.trim()).filter(Boolean);
+    const isList = lines.length > 0 && lines.every((l) => /^[-*]\s+/.test(l));
+    sections.push({ title: parts[i].trim(), items: isList ? lines.map((l) => l.replace(/^[-*]\s+/, "").replace(/\.$/, "")) : null, body });
+  }
+  return { intro, sections };
 }
 
 /** Enlace de WhatsApp con mensaje prellenado (no incluye datos personales). */

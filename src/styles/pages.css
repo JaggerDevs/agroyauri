@@ -10,7 +10,6 @@
 .cards-grid .service-card h3 { font-size: 16px; min-height: 0; }
 .cards-grid .service-card .body { padding: 18px 20px 22px; }
 .card-more { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 13.5px; font-weight: 600; color: var(--forest-600); }
-.card-price { display: inline-block; margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--forest-600); background: #eef6e6; border-radius: 999px; padding: 3px 12px; }
 
 .detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; align-items: start; }
 .detail-aside { position: sticky; top: 100px; display: grid; gap: 18px; }
@@ -18,11 +17,60 @@
 .aside-card h2 { font-family: var(--serif); font-size: 20px; color: var(--forest-900); margin-bottom: 8px; }
 .aside-card p { font-size: 14px; color: var(--gray); }
 .aside-card .btn { width: 100%; margin-top: 14px; white-space: normal; }
-.aside-price { font-size: 24px; font-weight: 600; color: var(--forest-600) !important; margin: 6px 0 2px; }
 .facts { display: grid; gap: 12px; font-size: 14px; margin: 0; }
 .facts dt { font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); }
 .facts dd { margin: 2px 0 0; color: var(--ink); font-weight: 500; }
 .facts a { color: var(--forest-600); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Página de servicio ---------- */
+.svc-intro { padding-top: 56px; }
+.svc-intro-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 56px; align-items: center; }
+.svc-intro .eyebrow { display: flex; align-items: center; gap: 10px; }
+.svc-intro .eyebrow .svc-ico { width: 26px; height: 26px; }
+.svc-lead { font-size: 17.5px; line-height: 1.75; }
+.svc-badges { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 0; }
+.svc-badges li { display: inline-flex; align-items: center; gap: 7px; background: #eef6e6; color: var(--forest-700); font-size: 13px; font-weight: 500; border-radius: 999px; padding: 6px 14px; }
+.svc-badges .ico { width: 16px; height: 16px; color: var(--green-400); }
+.svc-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.svc-photo { position: relative; margin: 0; border-radius: 22px; overflow: hidden; box-shadow: 0 24px 48px -24px rgba(8, 48, 28, .45); }
+.svc-photo img { width: 100%; aspect-ratio: 5 / 4; object-fit: cover; display: block; }
+.svc-photo figcaption {
+  position: absolute; left: 16px; bottom: 16px; display: flex; align-items: center; gap: 10px;
+  background: rgba(255, 255, 255, .94); color: var(--forest-900); font-weight: 600; font-size: 14px;
+  border-radius: 999px; padding: 8px 18px 8px 10px; box-shadow: var(--shadow);
+}
+.svc-photo figcaption svg { width: 28px; height: 28px; }
+
+.svc-details { background: var(--cream-2); }
+.svc-sections { display: grid; gap: 44px; }
+.svc-block h2 { margin-bottom: 20px; }
+.svc-features { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.svc-features li {
+  display: flex; align-items: flex-start; gap: 14px; background: #fff; border: 1px solid #e9ece5;
+  border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); font-size: 15px; line-height: 1.5; color: var(--ink);
+}
+.svc-check { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #eef6e6; color: var(--green-400); }
+.svc-check svg { width: 18px; height: 18px; }
+.aside-quote { border-top: 4px solid var(--lime); }
+.aside-phones { margin-top: 16px; text-align: center; }
+.aside-phones a { color: var(--forest-600); font-weight: 600; white-space: nowrap; }
+
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; list-style: none; padding: 0; margin: 0; }
+.step { position: relative; background: #fff; border: 1px solid #eef0ea; border-radius: var(--radius); padding: 24px 22px 26px; box-shadow: var(--shadow); }
+.step-num {
+  display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--forest-600); color: var(--lime); font-family: var(--serif); font-weight: 700; font-size: 16px;
+}
+.step h3 { font-size: 17px; color: var(--forest-900); margin: 14px 0 6px; line-height: 1.3; }
+.step p { font-size: 14px; color: var(--gray); }
+.step:not(:last-child)::after {
+  content: ""; position: absolute; top: 45px; right: -18px; width: 18px; height: 2px; background: var(--lime-600);
+}
+
+.svc-others { background: var(--cream-2); }
+.others-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.others-grid .service-card h3 { font-size: 16px; min-height: 0; }
+.others-grid .service-card .body { padding: 18px 20px 22px; }
 
 .prose { font-size: 16px; line-height: 1.75; color: #33403a; max-width: 72ch; }
 .prose > * + * { margin-top: 1em; }
@@ -70,7 +118,6 @@
 .product-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: center; }
 .tag { font-size: 11.5px; font-weight: 600; border-radius: 999px; padding: 2px 10px; background: #eef6e6; color: var(--forest-600); }
 .tag.off { background: #f3eeee; color: #8a4b3f; }
-.product-price { font-weight: 600; color: var(--forest-600); }
 .cat-title { font-family: var(--serif); font-size: 24px; color: var(--forest-900); margin: 10px 0 18px; }
 .cat-title:not(:first-child) { margin-top: 46px; }
 
@@ -102,6 +149,10 @@
   .cards-grid, .blog-grid { grid-template-columns: 1fr 1fr; }
   .detail-grid { grid-template-columns: 1fr; }
   .detail-aside { position: static; }
+  .svc-intro-grid { grid-template-columns: 1fr; gap: 32px; }
+  .svc-photo { max-width: 640px; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .step::after { display: none; }
 }
 @media (max-width: 760px) {
   .hide-sm { display: none; }
@@ -114,6 +165,12 @@
   .product-card .btn { font-size: 12.5px; padding: 9px 8px; gap: 6px; }
   .product-card .btn .ico { width: 15px; height: 15px; }
   .notfound { padding: 120px 0 60px; }
+  .svc-lead { font-size: 16px; }
+  .svc-features, .steps, .others-grid { grid-template-columns: 1fr; }
+  .svc-ctas .btn { flex: 1 1 100%; }
+  .step { display: grid; grid-template-columns: 44px 1fr; column-gap: 16px; padding: 18px; }
+  .step-num { grid-row: span 2; }
+  .step h3 { margin: 2px 0 4px; }
 }
 
 /* h2 de tarjetas/paneles: anulan el estilo de título de sección */

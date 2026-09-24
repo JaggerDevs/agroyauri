@@ -9,7 +9,6 @@ interface Props {
   id?: string;
 }
 const { services, settings, selected, id = "quoteForm" } = Astro.props;
-const plans = settings.plans.items.map((p) => p.name);
 const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 <form class="quote-card lead-form" id={id} novalidate data-wa={settings.contact.whatsapp} data-turnstile={turnstileKey || undefined}>
@@ -28,11 +27,6 @@ const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       <select name="service" required>
         <option value="">Selecciona un servicio</option>
         {services.map((s) => <option value={s.id} data-label={s.name} selected={s.id === selected}>{s.name}</option>)}
-        {plans.length > 0 && (
-          <optgroup label="Planes">
-            {plans.map((p) => <option value={`plan:${p}`} data-label={p}>{p}</option>)}
-          </optgroup>
-        )}
       </select>
     </label>
     <label>Área aproximada (m²)<input name="area_m2" type="number" min="1" max="99999999" step="any" inputmode="decimal" placeholder="Ej. 100" /></label>

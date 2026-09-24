@@ -1,11 +1,13 @@
 ---
 import Base from "../../layouts/Base.astro";
 import PageHero from "../../components/PageHero.astro";
+import Img from "../../components/Img.astro";
 import ProjectCard from "../../components/ProjectCard.astro";
+import ServiceCard from "../../components/ServiceCard.astro";
 import ContactSection from "../../components/ContactSection.astro";
 import { getSiteData, type Service } from "../../lib/data";
 import { breadcrumbs, service as serviceLd } from "../../lib/schema";
-import { md, servicePrice, waLink, waServiceText, truncate, seoTitle, seoDescription } from "../../lib/site";
+import { md, waLink, waServiceText, waProductText, telHref, serviceImagePosition, serviceSections, seoTitle, seoDescription } from "../../lib/site";
 
 export async function getStaticPaths() {
   const { services } = await getSiteData();
@@ -13,11 +15,31 @@ export async function getStaticPaths() {
 }
 
 const { service: s } = Astro.props as { service: Service };
-const { settings, services, projects } = await getSiteData();
+const { settings, services, projects, categories, products } = await getSiteData();
+const { intro, sections } = serviceSections(s.description);
 const related = projects.filter((p) => p.service_id === s.id);
-const others = services.filter((o) => o.id !== s.id);
-const price = servicePrice(s);
+// Servicios de venta (insumos, plantas): su categoría de productos comparte slug con el servicio.
+const category = categories.find((c) => c.slug === s.slug);
+const catalog = category ? products.filter((p) => p.category_id === category.id) : [];
+// Los 3 servicios siguientes en el orden del sitio (circular), para no repetir siempre los mismos.
+const idx = services.findIndex((o) => o.id === s.id);
+const others = [1, 2, 3].map((k) => services[(idx + k) % services.length]).filter((o) => o.id !== s.id);
+const steps = category
+  ? [
+      { t: "Revisa el catálogo", d: "Mira los productos disponibles y elige los que necesitas." },
+      { t: "Escríbenos", d: "Consúltanos por WhatsApp o mediante el formulario." },
+      { t: "Te asesoramos", d: "Te confirmamos disponibilidad, cantidades y precio." },
+      { t: "Coordinamos tu pedido", d: "Acordamos contigo los detalles para que recibas tu pedido." },
+    ]
+  : [
+      { t: "Cuéntanos qué necesitas", d: "Escríbenos por WhatsApp o llena el formulario con los datos de tu espacio." },
+      { t: "Evaluamos tu espacio", d: "Revisamos el área, su estado y lo que buscas lograr." },
+      { t: "Te enviamos la propuesta", d: "Recibes una cotización adaptada a tu espacio y sin compromiso." },
+      { t: "Ejecutamos el trabajo", d: "Nuestro equipo realiza el servicio y te acompaña con el seguimiento." },
+    ];
+const badges = category ? ["Productos de alta calidad", "Asesoría por WhatsApp"] : ["Cotización sin compromiso", "Viviendas, condominios y empresas"];
 const waText = waServiceText(s.name);
+const phones = settings.contact.phones;
 const path = `/servicios/${s.slug}`;
 const crumbs = [{ name: "Inicio", path: "/" }, { name: "Servicios", path: "/servicios" }, { name: s.name, path }];
 const title = s.seo_title || seoTitle(`${s.name} en Lima`);
@@ -33,28 +55,116 @@ const description = s.seo_description || seoDescription([s.short_description, `S
 >
   <PageHero eyebrow="Servicio" title={s.name} lead={s.short_description} image={s.image_url} imagePosition="center 50%" crumbs={crumbs} />
 
-  <section class="section">
-    <div class="container detail-grid">
-      <div class="prose" set:html={md(s.description)} />
-      <aside class="detail-aside">
-        <div class="aside-card">
-          <h2 class="aside-title">Solicita tu cotización</h2>
-          {price ? <p class="aside-price">{price}</p> : <p>El precio depende del área y del alcance del trabajo. Te enviamos una cotización sin compromiso.</p>}
+  <!-- Presentación: qué es el servicio + foto -->
+  <section class="section svc-intro">
+    <div class="container svc-intro-grid">
+      <div class="svc-intro-copy">
+        <p class="eyebrow">{s.icon && <svg class="svc-ico" aria-hidden="true"><use href={`#svc-${s.icon}`} /></svg>}Sobre el servicio</p>
+        {intro && <div class="prose svc-lead" set:html={md(intro)} />}
+        <ul class="svc-badges">
+          {badges.map((b) => <li><svg viewBox="0 0 24 24" class="ico"><use href="#i-check" /></svg>{b}</li>)}
+          <li><svg viewBox="0 0 24 24" class="ico"><use href="#i-pin" /></svg>Atención en Lima</li>
+        </ul>
+        <div class="svc-ctas">
           <a href={waLink(settings, waText)} class="btn btn-dark" target="_blank" rel="noopener" data-wa><svg viewBox="0 0 24 24" class="ico ico-lg"><use href="#i-wa" /></svg>Cotizar por WhatsApp</a>
           <a href="#contacto" class="btn btn-outline-dark">Llenar formulario</a>
         </div>
-        {others.length > 0 && (
-          <div class="aside-card">
-            <h2 class="aside-title">Otros servicios</h2>
-            <ul class="checks">
-              {others.map((o) => <li><a href={`/servicios/${o.slug}`}>{o.name}</a></li>)}
-            </ul>
-          </div>
-        )}
-      </aside>
+      </div>
+      <figure class="svc-photo">
+        <Img src={s.image_url} alt={s.name} widths={[480, 720, 960]} sizes="(max-width: 980px) 92vw, 560px" style={`object-position:${serviceImagePosition(s)}`} />
+        {s.icon && <figcaption><svg aria-hidden="true"><use href={`#svc-${s.icon}`} /></svg>{s.name}</figcaption>}
+      </figure>
     </div>
   </section>
 
+  <!-- Detalle: secciones de la descripción + tarjeta de contacto fija -->
+  {sections.length > 0 && (
+    <section class="section svc-details">
+      <div class="container detail-grid">
+        <div class="svc-sections">
+          {sections.map((sec) => (
+            <div class="svc-block">
+              <h2>{sec.title}</h2>
+              {sec.items ? (
+                <ul class="svc-features">
+                  {sec.items.map((it) => (
+                    <li><span class="svc-check"><svg viewBox="0 0 24 24"><use href="#i-check" /></svg></span><span set:html={md(it).replace(/^<p>|<\/p>\s*$/g, "")} /></li>
+                  ))}
+                </ul>
+              ) : (
+                <div class="prose" set:html={md(sec.body)} />
+              )}
+            </div>
+          ))}
+        </div>
+        <aside class="detail-aside">
+          <div class="aside-card aside-quote">
+            <h2 class="aside-title">¿Te interesa este servicio?</h2>
+            <p>El costo depende del área y del alcance del trabajo. Escríbenos y te enviamos una cotización sin compromiso.</p>
+            <a href={waLink(settings, waText)} class="btn btn-dark" target="_blank" rel="noopener" data-wa><svg viewBox="0 0 24 24" class="ico ico-lg"><use href="#i-wa" /></svg>Cotizar por WhatsApp</a>
+            <a href="#contacto" class="btn btn-outline-dark">Llenar formulario</a>
+            {phones.length > 0 && (
+              <p class="aside-phones">
+                O llámanos:{" "}
+                {phones.map((ph, i) => <>{i > 0 && " / "}<a href={telHref(ph)}>{ph}</a></>)}
+              </p>
+            )}
+          </div>
+        </aside>
+      </div>
+    </section>
+  )}
+
+  <!-- Cómo trabajamos -->
+  <section class="section svc-steps">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Paso a paso</p>
+          <h2>{category ? "Cómo hacer tu pedido" : "Cómo trabajamos"}</h2>
+        </div>
+      </div>
+      <ol class="steps">
+        {steps.map((st, i) => (
+          <li class="step">
+            <span class="step-num">{String(i + 1).padStart(2, "0")}</span>
+            <h3>{st.t}</h3>
+            <p>{st.d}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Productos (servicios de venta) -->
+  {catalog.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Catálogo</p>
+            <h2>Productos disponibles</h2>
+          </div>
+          <a href={`/productos#${category!.slug}`} class="link-more">Ver catálogo completo <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
+        </div>
+        <div class="product-grid">
+          {catalog.slice(0, 4).map((p) => (
+            <article class="product-card">
+              <Img src={p.image_url} alt={p.name} widths={[300, 480, 640]} sizes="(max-width: 760px) 45vw, (max-width: 1180px) 30vw, 290px" />
+              <div class="body">
+                <h3>{p.name}</h3>
+                {!p.available && <div class="product-meta"><span class="tag off">Agotado</span></div>}
+                {p.description && <p>{p.description}</p>}
+                <a href={waLink(settings, waProductText(p.name))} class="btn btn-dark" target="_blank" rel="noopener" data-wa><svg viewBox="0 0 24 24" class="ico"><use href="#i-wa" /></svg>Consultar<span class="hide-sm">&nbsp;por WhatsApp</span></a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Proyectos del servicio -->
   {related.length > 0 && (
     <section class="section projects">
       <div class="container">
@@ -67,6 +177,24 @@ const description = s.seo_description || seoDescription([s.short_description, `S
         </div>
         <div class="projects-grid">
           {related.slice(0, 4).map((p) => <ProjectCard project={p} services={services} sizes="(max-width: 760px) 45vw, (max-width: 1180px) 30vw, 300px" />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Otros servicios -->
+  {others.length > 0 && (
+    <section class="section svc-others">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">También te puede interesar</p>
+            <h2>Otros servicios</h2>
+          </div>
+          <a href="/servicios" class="link-more">Ver todos los servicios <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
+        </div>
+        <div class="others-grid">
+          {others.map((o) => <ServiceCard service={o} sizes="(max-width: 760px) 90vw, (max-width: 1180px) 33vw, 420px" />)}
         </div>
       </div>
     </section>

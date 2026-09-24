@@ -3,9 +3,12 @@
 ## Contexto
 - v1 (HTML estático) publicada en GitHub Pages: https://neechan15.github.io/agroyauri/ (rama `main`, repo público `neechan15/agroyauri`). NO tocar `main` hasta terminar v2.
 - v2 se trabaja en la rama **`v2`** (esta carpeta es el repo git). Encargo completo: "prompt de 52 puntos" (CMS+CRM, SEO, leads, Supabase Free, Cloudflare Pages Free).
-- Diseño APROBADO: no cambiar hero, colores, tipografías ni orden del Home (Header → Hero curvo → Servicios → Proyectos → Costos → Contacto → Footer). Misión/Visión solo en /nosotros.
+- Diseño APROBADO: no cambiar hero, colores, tipografías ni orden del Home (Header → Hero curvo → Servicios → Proyectos → Contacto → Footer). Misión/Visión solo en /nosotros.
 - Datos reales solo del brochure (`documentos/Brochure_Agroyauri_2026.pdf`): tel 931-637-047 / 991-554-666, eyauri@agroyauri.com, Pachacamac - Lima, RUC 20614909189. Redes sociales: NO hay URLs reales (se ocultan si están vacías).
 - git: `C:\Program Files\Git\cmd\git.exe`, identidad neechan15 / 58159260+neechan15@users.noreply.github.com. `gh` autenticado.
+- **Sin precios en la web pública** (decisión del cliente, sept 2026): se quitó la sección Costos/planes del Home, el enlace "Costos" del menú, los planes del formulario y los precios de servicios/productos. Los campos de precio siguen en la BD y en el panel, pero no se muestran.
+- Página de servicio (`src/pages/servicios/[slug].astro`): intro + foto, "Qué incluye" en tarjetas (cada `## Título` de la descripción cuyo cuerpo sea solo una lista se muestra así; ver `serviceSections` en `src/lib/site.ts`), pasos, productos (si hay categoría con el mismo slug), proyectos y otros servicios.
+- Backend (Supabase) aún sin decidir dónde se alojará: por ahora solo se publica el frontend en Cloudflare Pages usando `seed.json`.
 
 ## Arquitectura decidida
 - **Astro 7 estático** (`output: static`, `build.format: file`, `trailingSlash: never`). El visitante NUNCA consulta Supabase: el build lee Supabase (anon key) y genera HTML. Sin credenciales usa `src/data/seed.json`.
@@ -22,7 +25,7 @@
 - [x] **Fase 7 SEO técnico** — `node scripts/audit-seo.mjs` (tras build) → sin observaciones: title ≤70 y description 50–170 únicos (helpers `seoTitle`/`seoDescription` en `src/lib/site.ts`), canonical limpio, 1 H1, OG, JSON-LD válido (LocalBusiness, Service, ItemList, CreativeWork, Article, BreadcrumbList), alt + width/height, 0 enlaces rotos, sitemap sin /admin, robots OK. GA4/GSC solo si `PUBLIC_GA_ID`/`PUBLIC_GSC_VERIFICATION` existen (verificado; nunca en /admin).
 - [x] **Fase 8 Performance** — Lighthouse móvil (local, sin CDN): inicio perf 96 / a11y 100 / BP 100 / SEO 100, LCP 2.5 s, CLS 0, 626 KB (v1: perf 67, LCP 7.9 s, 2.3 MB); página de servicio perf 100, LCP 1.7 s, 198 KB. JS público ≤ ~3.5 KB/página; `marked` y `supabase-js` solo en /admin. Logo con densities 1x/2x. CSS externo (inline solo ganaba 0.1 s).
 - [x] **Fase 9 Auditoría + docs** — `README.md` (arquitectura, rutas, env, despliegue, credenciales a crear, checklists Search Console/GA4), `docs/SUPABASE.md`, `docs/CLOUDFLARE.md`, `.env.example`. Regresión OK: test:db 31/31, e2e-leads 18/18, e2e-admin 41/41, audit-seo limpio, build sin credenciales (seed) OK, 0 secretos en dist. Comparación visual final v1 vs v2: idéntica salvo íconos de redes ocultos (sin URLs reales) y línea de privacidad del formulario.
-- [ ] **PENDIENTE DEL USUARIO**: crear proyecto Supabase (migración + seed + admin + desactivar signups), conectar Cloudflare Pages (variables + deploy hook), probar en producción, luego mergear `v2` → `main` y apagar GitHub Pages. Revisar textos de servicios/productos (redactados desde el brochure) y precios de planes (referenciales de la maqueta).
+- [ ] **PENDIENTE DEL USUARIO**: crear proyecto Supabase (migración + seed + admin + desactivar signups), conectar Cloudflare Pages (variables + deploy hook), probar en producción, luego mergear `v2` → `main` y apagar GitHub Pages. Revisar textos de servicios/productos (redactados desde el brochure).
 
 ## Pruebas locales (sin cuenta Supabase)
 - Emulador: `POSTGREST_BIN=<scratchpad>\pgrst\postgrest.exe node scripts/local-supabase.mjs` → API en http://127.0.0.1:54321, admin `admin@agroyauri.test / admin12345`, no-admin `intruso@agroyauri.test / intruso12345`. Claves en `%TEMP%\agroyauri-local-keys.json`. PostgREST 16.3 Windows necesita `LIBPQ.dll` (copiada del wheel psycopg-binary a la carpeta del exe). Si se reinicia el PC hay que volver a descargarlo (scratchpad temporal).

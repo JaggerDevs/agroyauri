@@ -5,11 +5,10 @@ import Img from "../../components/Img.astro";
 import CtaFinal from "../../components/CtaFinal.astro";
 import { getSiteData } from "../../lib/data";
 import { breadcrumbs } from "../../lib/schema";
-import { servicePrice } from "../../lib/site";
+import { serviceImagePosition } from "../../lib/site";
 
 const { settings, services } = await getSiteData();
 const crumbs = [{ name: "Inicio", path: "/" }, { name: "Servicios", path: "/servicios" }];
-const positions: Record<string, string> = { plagas: "50% 70%", saneamiento: "70% 40%", insumos: "50% 40%" };
 const itemList = {
   "@context": "https://schema.org",
   "@type": "ItemList",
@@ -34,23 +33,19 @@ const itemList = {
   <section class="section">
     <div class="container">
       <div class="cards-grid">
-        {services.map((s) => {
-          const price = servicePrice(s);
-          return (
-            <article class="service-card">
-              <a href={`/servicios/${s.slug}`} class="card-link" aria-label={s.name}></a>
-              <div class="media">
-                <Img src={s.image_url} alt={s.name} widths={[400, 640, 800]} sizes="(max-width: 760px) 90vw, (max-width: 980px) 45vw, 400px" style={`object-position:${positions[s.icon ?? ""] ?? "50% 50%"}`} />
-              </div>
-              <div class="body">
-                <h2 class="card-h">{s.icon && <svg class="svc-ico" aria-hidden="true"><use href={`#svc-${s.icon}`} /></svg>}{s.name}</h2>
-                {s.short_description && <p>{s.short_description}</p>}
-                {price && <span class="card-price">{price}</span>}
-                <span class="card-more">Ver servicio <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></span>
-              </div>
-            </article>
-          );
-        })}
+        {services.map((s) => (
+          <article class="service-card">
+            <a href={`/servicios/${s.slug}`} class="card-link" aria-label={s.name}></a>
+            <div class="media">
+              <Img src={s.image_url} alt={s.name} widths={[400, 640, 800]} sizes="(max-width: 760px) 90vw, (max-width: 980px) 45vw, 400px" style={`object-position:${serviceImagePosition(s)}`} />
+            </div>
+            <div class="body">
+              <h2 class="card-h">{s.icon && <svg class="svc-ico" aria-hidden="true"><use href={`#svc-${s.icon}`} /></svg>}{s.name}</h2>
+              {s.short_description && <p>{s.short_description}</p>}
+              <span class="card-more">Ver servicio <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></span>
+            </div>
+          </article>
+        ))}
       </div>
     </div>
   </section>
