@@ -31,7 +31,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+html { scroll-behavior: smooth; scroll-padding-top: 90px; overflow-x: clip; } /* hojas decorativas: nunca scroll lateral en móvil */
 body {
   margin: 0;
   font-family: var(--sans);
