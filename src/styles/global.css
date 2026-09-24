@@ -603,3 +603,19 @@ ul { margin: 0; padding: 0; list-style: none; }
   .contact, .cta-final { background-image: url("../assets/bg/contacto-800.webp"); }
   .site-footer { background-image: url("../assets/bg/footer-800.webp"); }
 }
+
+/* Header móvil: barra blanca a todo el ancho, logo a la izquierda y menú redondo verde */
+@media (max-width: 760px) {
+  .site-header, .site-header.is-fixed { padding: 0; }
+  .nav-bar {
+    border-radius: 0; border: 0; min-height: 62px; padding: 8px 16px;
+    background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none;
+    box-shadow: 0 6px 18px -12px rgba(3, 30, 16, .45);
+  }
+  .site-header.is-fixed .nav-bar { background: #fff; }
+  .nav-actions .btn { display: none; }
+  .brand span { font-size: 17px; }
+  .menu-toggle { width: 44px; height: 44px; background: var(--forest-600); padding: 0 12px; }
+  .menu-toggle span { background: #fff; }
+  .main-nav { left: 12px; right: 12px; top: calc(100% + 10px); }
+}
