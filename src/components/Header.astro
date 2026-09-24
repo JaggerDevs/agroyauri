@@ -2,10 +2,8 @@
 import { Image } from "astro:assets";
 import logo from "../assets/deco/logo_verde.png";
 import type { Settings } from "../lib/data";
-import { waLink, waGeneralText } from "../lib/site";
 
 interface Props { settings: Settings }
-const { settings } = Astro.props;
 const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "") || "/";
 
 const items = [
@@ -28,9 +26,6 @@ const items = [
       ))}
     </nav>
     <div class="nav-actions">
-      <a href={waLink(settings, waGeneralText)} class="wa-mini" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp" data-wa>
-        <svg viewBox="0 0 24 24"><use href="#i-wa" /></svg>
-      </a>
       <a href="/#contacto" class="btn btn-dark btn-sm">
         <svg viewBox="0 0 24 24" class="ico"><use href="#i-wa" /></svg>
         Cotiza ahora
