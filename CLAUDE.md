@@ -8,6 +8,7 @@
 - git: `C:\Program Files\Git\cmd\git.exe`, identidad neechan15 / 58159260+neechan15@users.noreply.github.com. `gh` autenticado.
 - **Sin precios en la web pública** (decisión del cliente, sept 2026): se quitó la sección Costos/planes del Home, el enlace "Costos" del menú, los planes del formulario y los precios de servicios/productos. Los campos de precio siguen en la BD y en el panel, pero no se muestran.
 - Página de servicio (`src/pages/servicios/[slug].astro`): intro + foto, "Qué incluye" en tarjetas (cada `## Título` de la descripción cuyo cuerpo sea solo una lista se muestra así; ver `serviceSections` en `src/lib/site.ts`), pasos, productos (si hay categoría con el mismo slug), proyectos y otros servicios.
+- Cambios de diseño pedidos por el cliente (sept 2026): se quitó el texto "Espacios que transforman vidas" del hero del inicio y el header pasó a ser una píldora flotante (4 esquinas redondeadas, efecto vidrio, enlace activo resaltado).
 - Precios: el panel los edita; la web solo los muestra si `show_price = true` (hoy todos en false → "Solicitar cotización").
 - Encargo vigente (sept 2026): lista de 9 fases del usuario con **MULTI-SITE** para JaggerDev (un Supabase para varias webs). Supabase FREE y Cloudflare Pages FREE. No rehacer diseño ni migrar de framework.
 
