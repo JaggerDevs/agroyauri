@@ -55,13 +55,13 @@ const carousel = (featured.length >= 3 ? featured : projects).slice(0, 8);
     <div class="container">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Nuestros servicios</p>
-          <h2>Soluciones integrales para cada necesidad</h2>
+          <h2 class="lead-title">Nuestros servicios</h2>
+          <p class="lead-sub">Soluciones integrales para cada necesidad</p>
         </div>
         <a href="/servicios" class="link-more">Ver todos los servicios <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
       </div>
       <div class="cards-6">
-        {homeServices.map((s) => <ServiceCard service={s} />)}
+        {homeServices.map((s) => <ServiceCard service={s} sizes="(max-width: 760px) 72vw, (max-width: 1180px) 46vw, 420px" />)}
       </div>
     </div>
   </section>
@@ -73,15 +73,15 @@ const carousel = (featured.length >= 3 ? featured : projects).slice(0, 8);
     <div class="container">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Nuestros proyectos</p>
-          <h2>Resultados que hablan por nosotros</h2>
+          <h2 class="lead-title">Nuestros proyectos</h2>
+          <p class="lead-sub">Resultados que hablan por nosotros</p>
         </div>
         <a href="/proyectos" class="link-more">Ver todos los proyectos <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
       </div>
       <div class="carousel" data-carousel>
         <button class="car-btn prev" aria-label="Proyecto anterior" data-dir="-1"><svg viewBox="0 0 24 24"><use href="#i-arrow" /></svg></button>
         <div class="car-track" tabindex="0" aria-label="Proyectos realizados">
-          {carousel.map((p) => <ProjectCard project={p} services={services} />)}
+          {carousel.map((p) => <ProjectCard project={p} services={services} sizes="(max-width: 760px) 78vw, (max-width: 1180px) 46vw, 420px" />)}
         </div>
         <button class="car-btn next" aria-label="Proyecto siguiente" data-dir="1"><svg viewBox="0 0 24 24"><use href="#i-arrow" /></svg></button>
       </div>

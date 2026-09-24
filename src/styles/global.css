@@ -123,6 +123,13 @@ ul { margin: 0; padding: 0; list-style: none; }
   display: inline-flex; align-items: center; gap: 22px; flex-wrap: wrap;
 }
 .section h2::after { content: ""; width: 56px; height: 3px; border-radius: 3px; background: var(--green-400); }
+/* Encabezado del inicio: título grande + subtítulo, sin línea decorativa */
+.section h2.lead-title {
+  display: block; font-family: var(--serif); font-size: clamp(30px, 3.2vw, 44px); line-height: 1.1;
+  letter-spacing: -.4px; color: var(--forest-900);
+}
+.section h2.lead-title::after { display: none; }
+.lead-sub { margin-top: 8px; font-size: clamp(15px, 1.25vw, 18px); font-weight: 500; color: var(--green-500); }
 .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 26px; }
 .link-more { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--forest-600); white-space: nowrap; padding-bottom: 8px; }
 .link-more:hover { color: var(--green-500); }
@@ -181,9 +188,9 @@ ul { margin: 0; padding: 0; list-style: none; }
   /* El fondo se funde con el crema arriba (ola del hero) y abajo (proyectos): sin cortes de color */
   background: linear-gradient(var(--cream) 0, rgba(251,250,244,.8) 140px, rgba(251,250,244,.8) calc(100% - 140px), var(--cream) 100%), var(--cream) url("../assets/bg/claro-hojas-1600.webp") center / cover no-repeat;
 }
-.leaf-srv-l { left: -74px; top: 8px; width: 120px; transform: rotate(20deg); }
+.leaf-srv-l { left: -74px; top: 52%; width: 120px; transform: rotate(20deg); }
 .leaf-srv-r { right: -54px; bottom: -40px; width: 130px; transform: rotate(-40deg); }
-.cards-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-inline: -24px; }
+.cards-6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .service-card {
   background: #fff; border-radius: var(--radius); overflow: hidden;
   box-shadow: var(--shadow); border: 1px solid #eef0ea;
@@ -200,15 +207,21 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .svc-ico { width: 30px; height: 30px; flex: none; }
 .service-card p { font-size: 13.5px; color: var(--gray); margin-top: 12px; line-height: 1.5; }
+/* Inicio: tarjetas de servicio grandes (3 por fila) */
+.cards-6 .service-card { border-radius: 16px; }
+.cards-6 .service-card .body { padding: 20px 24px 26px; }
+.cards-6 .service-card h3 { font-size: 18px; min-height: 0; gap: 12px; }
+.cards-6 .service-card .svc-ico { width: 34px; height: 34px; }
+.cards-6 .service-card p { font-size: 15px; margin-top: 10px; }
 
 /* PROYECTOS */
 .projects { padding-top: 40px; padding-bottom: 44px; background: var(--cream); }
-.leaf-prj-l { left: -50px; top: 10px; width: 110px; transform: rotate(-20deg); }
+.leaf-prj-l { left: -50px; top: 58%; width: 110px; transform: rotate(-20deg); }
 .leaf-prj-r { right: -40px; top: -40px; width: 110px; transform: rotate(60deg); }
 .carousel { position: relative; }
 .car-track {
-  display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 4 * 16px) / 5);
-  gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
+  display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 2 * 24px) / 3);
+  gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
   scrollbar-width: none; padding: 4px 2px 14px; outline: none;
 }
 .car-track::-webkit-scrollbar { display: none; }
@@ -219,6 +232,11 @@ ul { margin: 0; padding: 0; list-style: none; }
 .project-card img { width: 100%; aspect-ratio: 16 / 9.4; object-fit: cover; }
 .project-card h3 { font-size: 15px; font-weight: 600; color: var(--forest-900); padding: 10px 12px 0; line-height: 1.3; }
 .project-card p { font-size: 13.5px; color: var(--gray); padding: 2px 12px 12px; }
+/* Inicio: proyectos grandes (3 visibles) */
+.car-track .project-card { border-radius: 16px; }
+.car-track .project-card img { aspect-ratio: 4 / 3; }
+.car-track .project-card h3 { font-size: 18px; padding: 16px 20px 0; }
+.car-track .project-card p { font-size: 14.5px; padding: 4px 20px 20px; }
 .car-btn {
   position: absolute; top: 34%; z-index: 3; width: 40px; height: 40px; border-radius: 50%;
   border: 0; background: #fff; color: var(--forest-600); cursor: pointer; display: grid; place-items: center;
@@ -434,8 +452,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 @media (max-width: 1180px) {
   .main-nav { gap: 2px; }
   .main-nav a { padding: 8px 11px; }
-  .cards-6 { grid-template-columns: repeat(3, 1fr); gap: 18px; margin-inline: 0; }
-  .car-track { grid-auto-columns: calc((100% - 2 * 16px) / 3); }
+  .cards-6 { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .car-track { grid-auto-columns: calc((100% - 24px) / 2); }
   .plans-wrap { grid-template-columns: 1fr; padding-left: 0; }
   .plans-main { padding: 0 32px 40px; max-width: var(--container); margin: 0 auto; width: 100%; }
   .plans-aside { margin-top: 90px; border-top-left-radius: 60px; border-top-right-radius: 60px; padding: 60px 32px 44px; text-align: center; align-items: center; }
