@@ -1,8 +1,7 @@
-# AGROYAURI SAC — Web corporativa (v2: Astro + Supabase + Cloudflare)
+# AGROYAURI SAC — Web corporativa (Astro + Supabase + Cloudflare)
 
 ## Contexto
-- Repo en la organización **JaggerDevs** (`JaggerDevs/agroyauri`, transferido desde neechan15 el 24-09-2026). v1 (HTML estático) publicada en GitHub Pages: https://jaggerdevs.github.io/agroyauri/ (rama `main`; el link viejo neechan15.github.io ya da 404). NO tocar `main` hasta terminar v2.
-- v2 se trabaja en la rama **`v2`** (esta carpeta es el repo git). Encargo completo: "prompt de 52 puntos" (CMS+CRM, SEO, leads, Supabase Free, Cloudflare Pages Free).
+- Repo en la organización **JaggerDevs** (`JaggerDevs/agroyauri`, transferido desde neechan15 el 24-09-2026). Se trabaja en **`main`** (esta carpeta es el repo git). El 24-09-2026 la antigua rama `v2` pasó a ser `main` y se borró; la web estática anterior (v1) quedó en la etiqueta **`v1-estatica`**. GitHub Pages está DESACTIVADO: la web se publica solo en Cloudflare Pages. Encargo completo: "prompt de 52 puntos" (CMS+CRM, SEO, leads, Supabase Free, Cloudflare Pages Free).
 - Diseño APROBADO: no cambiar hero, colores, tipografías ni orden del Home (Header → Hero curvo → Servicios → Proyectos → Contacto → Footer). Misión/Visión solo en /nosotros.
 - Datos reales solo del brochure (`documentos/Brochure_Agroyauri_2026.pdf`): tel 931-637-047 / 991-554-666, eyauri@agroyauri.com, Pachacamac - Lima, RUC 20614909189. Redes sociales: NO hay URLs reales (se ocultan si están vacías).
 - git: `C:\Program Files\Git\cmd\git.exe`, identidad neechan15 / 58159260+neechan15@users.noreply.github.com. `gh` autenticado.
@@ -13,7 +12,7 @@
 - Encargo vigente (sept 2026): lista de 9 fases del usuario con **MULTI-SITE** para JaggerDev (un Supabase para varias webs). Supabase FREE y Cloudflare Pages FREE. No rehacer diseño ni migrar de framework.
 
 ## Publicación (Cloudflare Pages)
-- Proyecto `agroyauri` → **https://agroyauri.pages.dev** (cuenta Cloudflare jcorcuer4@gmail.com). Debe estar CONECTADO A GIT (`JaggerDevs/agroyauri`, rama de producción `v2`, build `npm run build`, salida `dist`, vars `PUBLIC_SITE_URL` y `PUBLIC_SITE_SLUG=agroyauri`). La app "Cloudflare Workers and Pages" está instalada en la org JaggerDevs con repos seleccionados: agroyauri debe estar en la lista.
+- Proyecto `agroyauri` → **https://agroyauri.pages.dev** (cuenta Cloudflare jcorcuer4@gmail.com). Debe estar CONECTADO A GIT (`JaggerDevs/agroyauri`, rama de producción `main`, build `npm run build`, salida `dist`, vars `PUBLIC_SITE_URL` y `PUBLIC_SITE_SLUG=agroyauri`). La app "Cloudflare Workers and Pages" está instalada en la org JaggerDevs con repos seleccionados: agroyauri debe estar en la lista.
 - (El primer proyecto se creó por Direct Upload con wrangler y se borró el 24-09-2026 para recrearlo conectado a Git: un Direct Upload no se puede convertir.)
 - Sin Supabase todavía: usa seed.json; el formulario responde 503 y el botón WhatsApp funciona.
 
@@ -43,7 +42,7 @@
 - [x] **Fase 9 Auditoría + docs** — `README.md` (arquitectura, rutas, env, despliegue, credenciales a crear, checklists Search Console/GA4), `docs/SUPABASE.md`, `docs/CLOUDFLARE.md`, `.env.example`. Regresión OK: test:db 31/31, e2e-leads 18/18, e2e-admin 41/41, audit-seo limpio, build sin credenciales (seed) OK, 0 secretos en dist. Comparación visual final v1 vs v2: idéntica salvo íconos de redes ocultos (sin URLs reales) y línea de privacidad del formulario.
 - [x] **Multi-site + CRM (sept 2026)** — test:db 59/59, e2e-leads 24/24, e2e-admin 71/71 (incluye admin de otra web y super_admin), audit-seo limpio, tsc sin errores, JS público 3,8 KB sin Supabase, solo la clave anon en dist. Lighthouse móvil página de servicio: 99/100/100/100.
   - Observación abierta: Lighthouse/Chrome en Linux no registra LCP en el INICIO ("NO_LCP"); pasa igual con la versión anterior (no es regresión). Otras páginas sí. Investigar si molesta.
-- [ ] **PENDIENTE DEL USUARIO**: crear proyecto Supabase (migración + seed + admin + desactivar signups), conectar Cloudflare Pages (variables + deploy hook), probar en producción, luego mergear `v2` → `main` y apagar GitHub Pages. Revisar textos de servicios/productos (redactados desde el brochure).
+- [ ] **PENDIENTE DEL USUARIO**: crear proyecto Supabase (migración + seed + admin + desactivar signups), conectar Cloudflare Pages (variables + deploy hook), probar en producción. Revisar textos de servicios/productos (redactados desde el brochure).
 
 ## Pruebas locales (sin cuenta Supabase)
 - Emulador: `POSTGREST_BIN=<ruta>/postgrest node scripts/local-supabase.mjs` → API en http://127.0.0.1:54321. Usuarios: `super@jaggerdev.test / super12345` (super_admin), `admin@agroyauri.test / admin12345`, `otro@otra-empresa.test / otro12345` (otra web), `intruso@agroyauri.test / intruso12345` (pending). Linux: binario `postgrest-v16.3-linux-static-x86-64` de GitHub releases (no necesita libpq). Claves en `%TEMP%\agroyauri-local-keys.json`. PostgREST 16.3 Windows necesita `LIBPQ.dll` (copiada del wheel psycopg-binary a la carpeta del exe). Si se reinicia el PC hay que volver a descargarlo (scratchpad temporal).
@@ -59,7 +58,7 @@
 - Pattern HTML con flag v: escapar `( ) -` dentro de clases.
 
 ## Continuar en otra PC
-1. `git clone https://github.com/JaggerDevs/agroyauri.git && cd agroyauri && git checkout v2`
+1. `git clone https://github.com/JaggerDevs/agroyauri.git && cd agroyauri`
 2. `npm install` (Node 22+). Si npm bloquea scripts: `npm approve-scripts esbuild workerd sharp`.
 3. `npm run dev` (sin .env usa src/data/seed.json) · `npm run build` · `npm run test:db`.
 4. NO están en git (copiar a mano si se necesitan): `documentos/` (brochure), `referencias/`, `assets/` originales, `.env`, `.dev.vars`.

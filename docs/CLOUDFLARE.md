@@ -6,7 +6,7 @@
    - **Framework preset:** Astro
    - **Build command:** `npm run build`
    - **Build output directory:** `dist`
-   - **Production branch:** `main` (o `v2` mientras se prueba)
+   - **Production branch:** `main`
    - **Root directory:** vacío
    - **Node 22:** lo toma del archivo `.node-version` del repositorio. No pongas nada de Node en el *Build command*; si quieres forzarlo, agrega la variable de entorno `NODE_VERSION` = `22`.
 3. La carpeta `functions/` se detecta sola: `/api/lead` y `/api/rebuild` quedan como Pages Functions.
