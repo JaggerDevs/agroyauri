@@ -1,7 +1,7 @@
 # Cloudflare Pages (plan Free)
 
 ## 1. Conectar el repositorio
-1. https://dash.cloudflare.com → **Workers & Pages → Create → Pages → Connect to Git** → repositorio `neechan15/agroyauri`.
+1. https://dash.cloudflare.com → **Workers & Pages → Create → Pages → Connect to Git** → repositorio `JaggerDevs/agroyauri`.
 2. Configuración de build:
    - **Framework preset:** Astro
    - **Build command:** `npm run build`

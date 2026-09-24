@@ -1,7 +1,7 @@
 # AGROYAURI SAC — Web corporativa (v2: Astro + Supabase + Cloudflare)
 
 ## Contexto
-- v1 (HTML estático) publicada en GitHub Pages: https://neechan15.github.io/agroyauri/ (rama `main`, repo público `neechan15/agroyauri`). NO tocar `main` hasta terminar v2.
+- Repo en la organización **JaggerDevs** (`JaggerDevs/agroyauri`, transferido desde neechan15 el 24-09-2026). v1 (HTML estático) publicada en GitHub Pages: https://jaggerdevs.github.io/agroyauri/ (rama `main`; el link viejo neechan15.github.io ya da 404). NO tocar `main` hasta terminar v2.
 - v2 se trabaja en la rama **`v2`** (esta carpeta es el repo git). Encargo completo: "prompt de 52 puntos" (CMS+CRM, SEO, leads, Supabase Free, Cloudflare Pages Free).
 - Diseño APROBADO: no cambiar hero, colores, tipografías ni orden del Home (Header → Hero curvo → Servicios → Proyectos → Contacto → Footer). Misión/Visión solo en /nosotros.
 - Datos reales solo del brochure (`documentos/Brochure_Agroyauri_2026.pdf`): tel 931-637-047 / 991-554-666, eyauri@agroyauri.com, Pachacamac - Lima, RUC 20614909189. Redes sociales: NO hay URLs reales (se ocultan si están vacías).
@@ -12,11 +12,10 @@
 - Precios: el panel los edita; la web solo los muestra si `show_price = true` (hoy todos en false → "Solicitar cotización").
 - Encargo vigente (sept 2026): lista de 9 fases del usuario con **MULTI-SITE** para JaggerDev (un Supabase para varias webs). Supabase FREE y Cloudflare Pages FREE. No rehacer diseño ni migrar de framework.
 
-## Publicación actual (24-09-2026)
-- **https://agroyauri.pages.dev** = proyecto Cloudflare Pages `agroyauri` (cuenta jcorcuer4@gmail.com), tipo **Direct Upload** (creado con wrangler, NO conectado a Git). Rama de producción `v2`. Sin Supabase todavía (usa seed.json; formulario responde 503 y el botón WhatsApp funciona).
-- Para actualizarlo: `PUBLIC_SITE_URL=https://agroyauri.pages.dev npm run build && npx wrangler pages deploy dist --project-name agroyauri --branch v2` (en Linux wrangler necesita red fuera del sandbox).
-- Ojo: un proyecto Direct Upload no se puede pasar a integración Git después. Para el botón "Publicar cambios" (deploy hook) hará falta un proyecto conectado a Git o un GitHub Action que haga `wrangler pages deploy`.
-- https://neechan15.github.io/agroyauri/ sigue sirviendo la v1 (rama `main`).
+## Publicación (Cloudflare Pages)
+- Proyecto `agroyauri` → **https://agroyauri.pages.dev** (cuenta Cloudflare jcorcuer4@gmail.com). Debe estar CONECTADO A GIT (`JaggerDevs/agroyauri`, rama de producción `v2`, build `npm run build`, salida `dist`, vars `PUBLIC_SITE_URL` y `PUBLIC_SITE_SLUG=agroyauri`). La app "Cloudflare Workers and Pages" está instalada en la org JaggerDevs con repos seleccionados: agroyauri debe estar en la lista.
+- (El primer proyecto se creó por Direct Upload con wrangler y se borró el 24-09-2026 para recrearlo conectado a Git: un Direct Upload no se puede convertir.)
+- Sin Supabase todavía: usa seed.json; el formulario responde 503 y el botón WhatsApp funciona.
 
 ## Multi-site (migración `20260924000001_multisite_crm.sql`)
 - `sites` (Agroyauri = slug `agroyauri`), `site_users` (usuario ↔ web), `profiles.role`: pending | admin | super_admin.
@@ -60,7 +59,7 @@
 - Pattern HTML con flag v: escapar `( ) -` dentro de clases.
 
 ## Continuar en otra PC
-1. `git clone https://github.com/neechan15/agroyauri.git && cd agroyauri && git checkout v2`
+1. `git clone https://github.com/JaggerDevs/agroyauri.git && cd agroyauri && git checkout v2`
 2. `npm install` (Node 22+). Si npm bloquea scripts: `npm approve-scripts esbuild workerd sharp`.
 3. `npm run dev` (sin .env usa src/data/seed.json) · `npm run build` · `npm run test:db`.
 4. NO están en git (copiar a mano si se necesitan): `documentos/` (brochure), `referencias/`, `assets/` originales, `.env`, `.dev.vars`.
