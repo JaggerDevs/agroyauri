@@ -223,6 +223,9 @@ ul { margin: 0; padding: 0; list-style: none; }
   display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 2 * 24px) / 3);
   gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
   scrollbar-width: none; padding: 4px 2px 14px; outline: none;
+  /* Igual al padding lateral: sin esto el navegador "ajusta" 2px al cargar,
+     cuenta como scroll y Chrome deja de medir el LCP (Lighthouse: NO_LCP). */
+  scroll-padding-inline: 2px;
 }
 .car-track::-webkit-scrollbar { display: none; }
 .project-card {
@@ -520,7 +523,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   .leaf-hero-r { width: 80px; }
   .cards-6 {
     display: grid; grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 72%;
-    overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 16px; scrollbar-width: none;
+    overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 16px; scrollbar-width: none; scroll-padding-inline: 2px;
   }
   .cards-6::-webkit-scrollbar { display: none; }
   .service-card { scroll-snap-align: start; }
