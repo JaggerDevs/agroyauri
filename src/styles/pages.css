@@ -41,7 +41,7 @@
   background: rgba(255, 255, 255, .94); color: var(--forest-900); font-weight: 600; font-size: 14px;
   border-radius: 999px; padding: 8px 18px 8px 10px; box-shadow: var(--shadow);
 }
-.svc-photo figcaption svg { width: 28px; height: 28px; }
+.svc-photo figcaption svg { width: 28px; height: 28px; color: #0b5a36; }
 
 .svc-details { background: var(--cream-2); }
 .svc-sections { display: grid; gap: 44px; }

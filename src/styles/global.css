@@ -154,9 +154,9 @@ body:has(.notfound) .site-header { background: var(--forest-800); }
 .hero::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
   background:
-    linear-gradient(180deg, rgba(5,40,22,.6) 0%, rgba(5,40,22,0) 150px),
-    radial-gradient(ellipse 58% 62% at 50% 46%, rgba(5,40,22,.66) 0%, rgba(5,40,22,.38) 60%, rgba(5,40,22,.14) 100%),
-    linear-gradient(0deg, rgba(5,40,22,.4) 0%, rgba(5,40,22,0) 35%);
+    linear-gradient(180deg, rgba(5,40,22,.5) 0%, rgba(5,40,22,0) 140px),
+    radial-gradient(ellipse 50% 55% at 50% 46%, rgba(5,40,22,.56) 0%, rgba(5,40,22,.22) 62%, rgba(5,40,22,.04) 100%),
+    linear-gradient(0deg, rgba(5,40,22,.25) 0%, rgba(5,40,22,0) 30%);
 }
 .hero-inner { position: relative; z-index: 3; }
 .hero-copy { max-width: 780px; margin-inline: auto; text-align: center; }
@@ -206,7 +206,7 @@ body:has(.notfound) .site-header { background: var(--forest-800); }
   display: flex; align-items: center; gap: 10px;
   font-size: 14.5px; font-weight: 600; line-height: 1.25; color: var(--forest-900); min-height: 40px;
 }
-.svc-ico { width: 30px; height: 30px; flex: none; }
+.svc-ico { width: 30px; height: 30px; flex: none; color: #0b5a36; }
 .service-card p { font-size: 13.5px; color: var(--gray); margin-top: 12px; line-height: 1.5; }
 /* Inicio: tarjetas de servicio grandes (3 por fila) */
 .cards-6 .service-card { border-radius: 16px; }
@@ -390,19 +390,18 @@ body:has(section.contact) .footer-grid { grid-template-columns: 1.5fr .8fr 1.2fr
 .footer-contact li svg { width: 19px; height: 19px; color: var(--lime); flex: none; margin-top: 1px; }
 .socials { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
 .socials a {
-  width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center;
-  color: #fff; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.22);
-  transition: background .2s, color .2s, border-color .2s, transform .2s;
+  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; color: #fff;
+  box-shadow: 0 6px 16px -8px rgba(0,0,0,.6); transition: transform .2s, box-shadow .2s, filter .2s;
 }
-.socials a:hover { transform: translateY(-2px); box-shadow: 0 8px 18px -6px rgba(0,0,0,.55); filter: brightness(1.08); }
-.socials svg { width: 19px; height: 19px; }
+.socials a:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -8px rgba(0,0,0,.7); filter: brightness(1.1); }
+.socials svg { width: 22px; height: 22px; }
 /* Colores de cada red */
-.socials .social-facebook { background: #1877f2; border-color: #1877f2; }
-.socials .social-facebook svg { width: 22px; height: 22px; }
-.socials .social-tiktok { background: #000; border-color: rgba(255,255,255,.3); }
-.socials .social-tiktok svg { filter: drop-shadow(-1.5px -1px 0 #25f4ee) drop-shadow(1.5px 1px 0 #fe2c55); }
-.socials .social-youtube { background: #ff0000; border-color: #ff0000; }
-.socials .social-linkedin { background: #0a66c2; border-color: #0a66c2; }
+.socials .social-facebook { background: #1877f2; }
+.socials .social-tiktok { background: #000; box-shadow: inset 0 0 0 1px rgba(255,255,255,.25), 0 6px 16px -8px rgba(0,0,0,.6); }
+.socials .social-tiktok svg { width: 21px; height: 21px; filter: drop-shadow(-1px -.5px 0 #25f4ee) drop-shadow(1px .5px 0 #fe2c55); }
+.socials .social-youtube { background: #ff0000; }
+.socials .social-youtube svg { width: 26px; height: 26px; }
+.socials .social-linkedin { background: #0a66c2; }
 .footer-bottom { border-top: 1px solid rgba(255,255,255,.12); }
 .footer-bottom-inner { display: flex; justify-content: space-between; align-items: center; gap: 8px 24px; flex-wrap: wrap; padding-top: 18px; padding-bottom: 18px; font-size: 12.5px; color: #a9bfa5; }
 
@@ -558,20 +557,27 @@ body:has(section.contact) .footer-grid { grid-template-columns: 1.5fr .8fr 1.2fr
   .hero-ctas .btn { padding: 12px 26px; font-size: 14.5px; min-width: 230px; justify-content: center; }
   .leaf-hero-l { width: 110px; left: -50px; }
   .leaf-hero-r { width: 80px; }
-  /* Servicios del inicio en móvil: 2 columnas, foto completa con título encima */
+  /* Servicios del inicio en móvil: 2 columnas, foto completa; ícono de vidrio arriba y flecha a la izquierda del título */
   .cards-6 { grid-template-columns: 1fr 1fr; gap: 12px; }
-  .cards-6 .service-card { position: relative; aspect-ratio: 4 / 5; border: 0; border-radius: 18px; }
-  .cards-6 .service-card .media { position: absolute; inset: 0; aspect-ratio: auto; }
-  .cards-6 .service-card .body {
-    position: absolute; inset: auto 0 0 0; padding: 44px 12px 12px;
-    background: linear-gradient(180deg, rgba(4,30,17,0) 0%, rgba(4,30,17,.72) 45%, rgba(4,30,17,.9) 100%);
+  .cards-6 .service-card {
+    aspect-ratio: 4 / 5; border: 0; border-radius: 18px; isolation: isolate;
+    display: flex; flex-direction: column; justify-content: flex-end;
   }
-  .cards-6 .service-card h3 { flex-direction: column; align-items: flex-start; gap: 8px; font-size: 14px; line-height: 1.25; color: #fff; }
-  .cards-6 .service-card .svc-ico { width: 30px; height: 30px; padding: 5px; border-radius: 50%; background: rgba(255,255,255,.92); }
+  .cards-6 .service-card .media { position: absolute; inset: 0; z-index: -1; aspect-ratio: auto; }
+  .cards-6 .service-card .body {
+    display: flex; align-items: center; gap: 9px; padding: 46px 10px 12px;
+    background: linear-gradient(180deg, rgba(4,30,17,0) 0%, rgba(4,30,17,.7) 50%, rgba(4,30,17,.88) 100%);
+  }
+  .cards-6 .service-card h3 { display: block; font-size: 13.5px; line-height: 1.25; color: #fff; }
+  .cards-6 .service-card .svc-ico {
+    position: absolute; top: 10px; left: 10px; width: 38px; height: 38px; padding: 8px; border-radius: 50%;
+    color: #fff; background: rgba(6,42,24,.45); border: 1px solid rgba(255,255,255,.45);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  }
   .cards-6 .service-card p { display: none; }
   .cards-6 .svc-go {
-    display: grid; place-items: center; width: 30px; height: 30px; margin-top: 10px; border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,.85); color: #fff;
+    order: -1; flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--lime); color: var(--forest-900);
   }
   .cards-6 .svc-go svg { width: 15px; height: 15px; }
   /* Proyectos en móvil: tarjeta centrada, se asoma la anterior y la siguiente */
@@ -603,7 +609,8 @@ body:has(section.contact) .footer-grid { grid-template-columns: 1.5fr .8fr 1.2fr
   /* Encabezados de sección y bloque de contacto centrados */
   .section-head { align-items: center; text-align: center; }
   .section-head .section-title, .section-head h2 { justify-content: center; }
-  .contact-info { text-align: center; }
+  .section-head .link-more { align-self: flex-start; }
+  .contact-info { text-align: center; text-shadow: 0 1px 10px rgba(0,0,0,.5); }
   .contact .section-title { justify-content: center; }
   .contact-list { justify-items: center; }
   .contact-lead { margin-inline: auto; max-width: 420px; }
@@ -672,7 +679,9 @@ body:has(section.contact) .footer-grid { grid-template-columns: 1.5fr .8fr 1.2fr
 @media (max-width: 760px) {
   .services { background-image: linear-gradient(var(--cream) 0, rgba(251,250,244,.8) 140px, rgba(251,250,244,.8) calc(100% - 140px), var(--cream) 100%), url("../assets/bg/claro-hojas-800.webp"); }
   .plans-aside, .presentation { background-image: url("../assets/bg/verde-textura-800.webp"); }
-  .contact, .cta-final { background-image: url("../assets/bg/contacto-800.webp"); }
+  .cta-final { background-image: url("../assets/bg/contacto-800.webp"); }
+  .contact { background: var(--forest-800) url("../assets/bg/contacto-1600.webp") 4% center / auto 100% no-repeat; }
+  .contact::before { background: linear-gradient(90deg, rgba(6,42,24,.15), rgba(6,42,24,.5) 60%, rgba(6,42,24,.35)); }
   .site-footer { background-image: url("../assets/bg/footer-800.webp"); }
 }
 
