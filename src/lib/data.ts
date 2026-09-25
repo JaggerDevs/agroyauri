@@ -100,7 +100,7 @@ export type Settings = {
     ruc: string;
     tagline: string;
   };
-  social: { facebook?: string; instagram?: string; tiktok?: string; youtube?: string; linkedin?: string };
+  social: { facebook?: string; tiktok?: string; youtube?: string; linkedin?: string };
   plans: { title: string; note: string; items: Plan[] };
 };
 

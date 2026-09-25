@@ -25,7 +25,6 @@ export async function renderSettings(root: HTMLElement) {
     ruc: inp(c.ruc, { pattern: "[0-9]{11}" }),
     tagline: inp(c.tagline, { maxlength: 120 }),
     facebook: inp(s.facebook, { type: "url", placeholder: "https://facebook.com/…" }),
-    instagram: inp(s.instagram, { type: "url", placeholder: "https://instagram.com/…" }),
     tiktok: inp(s.tiktok, { type: "url", placeholder: "https://www.tiktok.com/@…" }),
     youtube: inp(s.youtube, { type: "url", placeholder: "https://www.youtube.com/@…" }),
     linkedin: inp(s.linkedin, { type: "url", placeholder: "https://linkedin.com/company/…" }),
@@ -44,7 +43,7 @@ export async function renderSettings(root: HTMLElement) {
     lab("Frase del pie de página", f.tagline),
     h("h2", { class: "form-section" }, "Redes sociales"),
     h("p", { class: "muted" }, "Deja vacío lo que no exista: los íconos solo aparecen si hay una URL real."),
-    h("div", { class: "grid2" }, lab("Facebook", f.facebook), lab("Instagram", f.instagram), lab("TikTok", f.tiktok), lab("YouTube", f.youtube), lab("LinkedIn", f.linkedin)),
+    h("div", { class: "grid2" }, lab("Facebook", f.facebook), lab("TikTok", f.tiktok), lab("YouTube", f.youtube), lab("LinkedIn", f.linkedin)),
     h("div", { class: "form-actions" }, save)
   );
 
@@ -66,7 +65,7 @@ export async function renderSettings(root: HTMLElement) {
       ruc: f.ruc.value.trim(),
       tagline: f.tagline.value.trim(),
     };
-    const social = { ...s, facebook: f.facebook.value.trim(), instagram: f.instagram.value.trim(), tiktok: f.tiktok.value.trim(), youtube: f.youtube.value.trim(), linkedin: f.linkedin.value.trim() };
+    const social = { ...s, facebook: f.facebook.value.trim(), tiktok: f.tiktok.value.trim(), youtube: f.youtube.value.trim(), linkedin: f.linkedin.value.trim() };
     save.disabled = true;
     const { error } = await sb!
       .from("site_settings")

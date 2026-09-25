@@ -51,12 +51,11 @@ const carousel = (featured.length >= 3 ? featured : projects).slice(0, 8);
       <div class="section-head">
         <div>
           <h2 class="lead-title">Nuestros servicios</h2>
-          <p class="lead-sub">Soluciones integrales para cada necesidad</p>
         </div>
         <a href="/servicios" class="link-more">Ver todos los servicios <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
       </div>
       <div class="cards-6">
-        {homeServices.map((s) => <ServiceCard service={s} sizes="(max-width: 760px) 72vw, (max-width: 1180px) 46vw, 420px" />)}
+        {homeServices.map((s) => <ServiceCard service={s} sizes="(max-width: 760px) 46vw, (max-width: 1180px) 46vw, 420px" />)}
       </div>
     </div>
   </section>
@@ -69,7 +68,6 @@ const carousel = (featured.length >= 3 ? featured : projects).slice(0, 8);
       <div class="section-head">
         <div>
           <h2 class="lead-title">Nuestros proyectos</h2>
-          <p class="lead-sub">Resultados que hablan por nosotros</p>
         </div>
         <a href="/proyectos" class="link-more">Ver todos los proyectos <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
       </div>
@@ -91,13 +89,19 @@ const carousel = (featured.length >= 3 ? featured : projects).slice(0, 8);
     const track = car.querySelector<HTMLElement>(".car-track")!;
     const prev = car.querySelector<HTMLButtonElement>(".prev");
     const next = car.querySelector<HTMLButtonElement>(".next");
+    // Al llegar al final, "siguiente" se convierte en "volver al inicio".
+    const atEnd = () => track.scrollLeft >= track.scrollWidth - track.clientWidth - 2;
     const update = () => {
-      const max = track.scrollWidth - track.clientWidth - 2;
       if (prev) prev.disabled = track.scrollLeft <= 2;
-      if (next) next.disabled = track.scrollLeft >= max;
+      if (next) {
+        const end = atEnd();
+        next.classList.toggle("to-start", end);
+        next.setAttribute("aria-label", end ? "Volver al primer proyecto" : "Proyecto siguiente");
+      }
     };
     car.querySelectorAll<HTMLButtonElement>(".car-btn").forEach((btn) =>
       btn.addEventListener("click", () => {
+        if (btn === next && atEnd()) return track.scrollTo({ left: 0, behavior: "smooth" });
         const card = track.querySelector(".project-card");
         const step = card ? card.getBoundingClientRect().width + 16 : track.clientWidth;
         track.scrollBy({ left: step * Number(btn.dataset.dir), behavior: "smooth" });
