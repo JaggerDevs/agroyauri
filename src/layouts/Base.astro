@@ -99,5 +99,25 @@ const GSC = import.meta.env.PUBLIC_GSC_VERIFICATION;
   {!bare && <Footer settings={settings} />}
   {!bare && <WhatsAppFloat settings={settings} text={waText} />}
   <Sprite />
+  {!bare && (
+    <script>
+      // Animación al hacer scroll: los bloques aparecen suavemente (sin JS o con "reducir movimiento" se ven normal).
+      const targets = ".section-head, .section > .container > h2, .cards-6 > *, .carousel, .contact-info, .quote-card, .cards-grid > *, .projects-grid > *, .product-grid > *, .blog-grid > *, .others-grid > *, .values-grid > *, .mv-grid > *, .pres-grid > *, .steps > *, .gallery-grid > *, .svc-intro-grid > *, .detail-grid > *, .about-intro > *, .cta-box, .footer-grid > *";
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+        const els = [...document.querySelectorAll<HTMLElement>(targets)];
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) if (e.isIntersecting) { (e.target as HTMLElement).classList.add("in"); io.unobserve(e.target); }
+        }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+        const vh = innerHeight;
+        for (const el of els) {
+          if (el.getBoundingClientRect().top < vh) continue; // lo visible al cargar no se anima (sin saltos)
+          const i = el.parentElement ? [...el.parentElement.children].indexOf(el) : 0;
+          el.style.setProperty("--d", `${Math.min(i % 4, 3) * 90}ms`);
+          el.classList.add("reveal");
+          io.observe(el);
+        }
+      }
+    </script>
+  )}
 </body>
 </html>
