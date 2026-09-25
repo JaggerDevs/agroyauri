@@ -7,7 +7,6 @@ interface Props { settings: Settings }
 const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "") || "/";
 
 const items = [
-  { href: "/", label: "Inicio", match: (p: string) => p === "/" },
   { href: "/nosotros", label: "Nosotros", match: (p: string) => p.startsWith("/nosotros") },
   { href: "/servicios", label: "Servicios", match: (p: string) => p.startsWith("/servicios") },
   { href: "/proyectos", label: "Proyectos", match: (p: string) => p.startsWith("/proyectos") },
