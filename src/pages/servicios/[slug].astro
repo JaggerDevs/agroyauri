@@ -60,7 +60,7 @@ const description = s.seo_description || seoDescription([s.short_description, `S
   <section class="section svc-intro">
     <div class="container svc-intro-grid">
       <div class="svc-intro-copy">
-        <p class="eyebrow">{s.icon && <svg class="svc-ico" aria-hidden="true"><use href={`#svc-${s.icon}`} /></svg>}Sobre el servicio</p>
+        <h2 class="svc-title">{s.icon && <svg class="svc-ico" aria-hidden="true"><use href={`#svc-${s.icon}`} /></svg>}Sobre el servicio</h2>
         {intro && <div class="prose svc-lead" set:html={md(intro)} />}
         <ul class="svc-badges">
           {badges.map((b) => <li><svg viewBox="0 0 24 24" class="ico"><use href="#i-check" /></svg>{b}</li>)}
@@ -123,7 +123,6 @@ const description = s.seo_description || seoDescription([s.short_description, `S
     <div class="container">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Paso a paso</p>
           <h2>{category ? "Cómo hacer tu pedido" : "Cómo trabajamos"}</h2>
         </div>
       </div>
@@ -145,7 +144,6 @@ const description = s.seo_description || seoDescription([s.short_description, `S
       <div class="container">
         <div class="section-head">
           <div>
-            <p class="eyebrow">Catálogo</p>
             <h2>Productos disponibles</h2>
           </div>
           <a href={`/productos#${category!.slug}`} class="link-more">Ver catálogo completo <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
@@ -178,7 +176,6 @@ const description = s.seo_description || seoDescription([s.short_description, `S
       <div class="container">
         <div class="section-head">
           <div>
-            <p class="eyebrow">Proyectos realizados</p>
             <h2>Trabajos de {s.name.toLowerCase()}</h2>
           </div>
           <a href="/proyectos" class="link-more">Ver todos los proyectos <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
@@ -196,8 +193,7 @@ const description = s.seo_description || seoDescription([s.short_description, `S
       <div class="container">
         <div class="section-head">
           <div>
-            <p class="eyebrow">También te puede interesar</p>
-            <h2>Otros servicios</h2>
+            <h2>También te puede interesar</h2>
           </div>
           <a href="/servicios" class="link-more">Ver todos los servicios <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
         </div>

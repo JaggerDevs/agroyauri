@@ -1,7 +1,8 @@
 ---
 import Img from "./Img.astro";
 interface Props {
-  eyebrow: string;
+  /** Ya no se muestra (el cliente pidió quitar los textos pequeños sobre los títulos). */
+  eyebrow?: string;
   /** Admite <span class="lime">…</span> */
   title: string;
   lead?: string | null;
@@ -9,12 +10,11 @@ interface Props {
   crumbs: { name: string; path: string }[];
   imagePosition?: string;
 }
-const { eyebrow, title, lead, image = "/media/site/jardin-casa.jpg", crumbs, imagePosition = "center 60%" } = Astro.props;
+const { title, lead, image = "/media/site/jardin-casa.jpg", crumbs, imagePosition = "center 60%" } = Astro.props;
 ---
 <section class="page-hero">
   <Img src={image} alt="" class="hero-bg" widths={[640, 960, 1440]} sizes="100vw" loading="eager" fetchpriority="high" style={`object-position:${imagePosition}`} />
   <div class="container page-hero-inner">
-    <p class="eyebrow eyebrow-light">{eyebrow}</p>
     <h1 set:html={title} />
     {lead && <p class="lead">{lead}</p>}
     <nav class="breadcrumb" aria-label="Ruta de navegación">

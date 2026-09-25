@@ -27,8 +27,8 @@
 /* ---------- Página de servicio ---------- */
 .svc-intro { padding-top: 56px; }
 .svc-intro-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 56px; align-items: center; }
-.svc-intro .eyebrow { display: flex; align-items: center; gap: 10px; }
-.svc-intro .eyebrow .svc-ico { width: 26px; height: 26px; }
+.svc-intro .svc-title { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.svc-intro .svc-title .svc-ico { width: 34px; height: 34px; }
 .svc-lead { font-size: 17.5px; line-height: 1.75; }
 .svc-badges { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 0; }
 .svc-badges li { display: inline-flex; align-items: center; gap: 7px; background: #eef6e6; color: var(--forest-700); font-size: 13px; font-weight: 500; border-radius: 999px; padding: 6px 14px; }
