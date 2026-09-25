@@ -394,8 +394,15 @@ body:has(.notfound) .site-header { background: var(--forest-800); }
   color: #fff; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.22);
   transition: background .2s, color .2s, border-color .2s, transform .2s;
 }
-.socials a:hover { background: var(--lime); border-color: var(--lime); color: var(--forest-900); transform: translateY(-2px); }
+.socials a:hover { transform: translateY(-2px); box-shadow: 0 8px 18px -6px rgba(0,0,0,.55); filter: brightness(1.08); }
 .socials svg { width: 19px; height: 19px; }
+/* Colores de cada red */
+.socials .social-facebook { background: #1877f2; border-color: #1877f2; }
+.socials .social-facebook svg { width: 22px; height: 22px; }
+.socials .social-tiktok { background: #000; border-color: rgba(255,255,255,.3); }
+.socials .social-tiktok svg { filter: drop-shadow(-1.5px -1px 0 #25f4ee) drop-shadow(1.5px 1px 0 #fe2c55); }
+.socials .social-youtube { background: #ff0000; border-color: #ff0000; }
+.socials .social-linkedin { background: #0a66c2; border-color: #0a66c2; }
 .footer-bottom { border-top: 1px solid rgba(255,255,255,.12); }
 .footer-bottom-inner { display: flex; justify-content: space-between; align-items: center; gap: 8px 24px; flex-wrap: wrap; padding-top: 18px; padding-bottom: 18px; font-size: 12.5px; color: #a9bfa5; }
 

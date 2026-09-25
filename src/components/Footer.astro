@@ -38,7 +38,7 @@ const year = new Date().getFullYear();
       {socials.length > 0 && (
         <div class="socials" aria-label="Redes sociales">
           {socials.map((s) => (
-            <a href={social[s.key]} target="_blank" rel="noopener" aria-label={`${s.label} de AGROYAURI SAC`} title={s.label}><svg viewBox="0 0 24 24" aria-hidden="true"><use href={`#${s.icon}`} /></svg></a>
+            <a href={social[s.key]} class={`social-${s.key}`} target="_blank" rel="noopener" aria-label={`${s.label} de AGROYAURI SAC`} title={s.label}><svg viewBox="0 0 24 24" aria-hidden="true"><use href={`#${s.icon}`} /></svg></a>
           ))}
         </div>
       )}
