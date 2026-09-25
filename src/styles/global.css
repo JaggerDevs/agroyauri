@@ -100,7 +100,7 @@ body:has(.notfound) .site-header { background: var(--forest-800); }
 .brand-light { color: #fff; }
 
 .main-nav { display: flex; gap: 4px; margin-left: auto; margin-right: auto; }
-.main-nav a { font-size: 14.5px; font-weight: 500; color: rgba(255, 255, 255, .88); position: relative; padding: 10px 16px; transition: color .2s; text-shadow: 0 1px 8px rgba(0, 0, 0, .25); }
+.main-nav a { font-size: 16px; font-weight: 500; color: rgba(255, 255, 255, .92); position: relative; padding: 10px 16px; transition: color .2s; text-shadow: 0 1px 8px rgba(0, 0, 0, .25); }
 .main-nav a::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: 2px; height: 2px; border-radius: 2px; background: var(--lime); transform: scaleX(0); transition: transform .2s; }
 .main-nav a:hover { color: #fff; }
 .main-nav a:hover::after { transform: scaleX(.5); }
