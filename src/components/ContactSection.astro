@@ -18,8 +18,6 @@ const H = as;
           {c.phones.map((p, i) => (<>{i > 0 && <>&nbsp;/&nbsp;</>}<a href={`https://wa.me/51${p.replace(/\D/g, "")}?text=${encodeURIComponent(waGeneralText)}`} target="_blank" rel="noopener" data-wa>{p}</a></>))}
         </li>
         <li><svg viewBox="0 0 24 24"><use href="#i-mail" /></svg><a href={`mailto:${c.email}`}>{c.email}</a></li>
-        <li><svg viewBox="0 0 24 24"><use href="#i-pin" /></svg><span>{c.city} - {c.region}</span></li>
-        <li><svg viewBox="0 0 24 24"><use href="#i-doc" /></svg><span>RUC: {c.ruc}</span></li>
       </ul>
       <p class="contact-script" aria-hidden="true"><svg viewBox="0 0 40 40"><use href="#i-leaf-line" /></svg>Más vida<br />en cada espacio</p>
     </div>
