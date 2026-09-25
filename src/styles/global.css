@@ -566,9 +566,15 @@ body:has(.notfound) .site-header { background: var(--forest-800); }
     border: 1.5px solid rgba(255,255,255,.85); color: #fff;
   }
   .cards-6 .svc-go svg { width: 15px; height: 15px; }
-  .car-track { grid-auto-columns: 78%; }
-  .car-btn.prev { display: none; }
-  .car-btn.next { right: 6px; top: 30%; width: 44px; height: 44px; background: var(--forest-600); color: #fff; box-shadow: 0 8px 20px -6px rgba(0,0,0,.45); }
+  /* Proyectos en móvil: tarjeta centrada, se asoma la anterior y la siguiente */
+  .car-track {
+    grid-auto-columns: calc(100vw - 90px); gap: 12px;
+    margin-inline: -18px; padding: 4px 45px 16px; scroll-padding-inline: 45px;
+  }
+  .car-track .project-card { scroll-snap-align: center; }
+  .car-btn { top: 32%; width: 42px; height: 42px; background: rgba(255,255,255,.96); color: var(--forest-700); box-shadow: 0 8px 22px -6px rgba(0,0,0,.45); }
+  .car-btn.prev { left: -10px; }
+  .car-btn.next { right: -10px; }
   .plans-main { padding: 0 18px 32px; }
   .plan-grid { grid-template-columns: 1fr; gap: 26px; }
   .plans-aside .checks { grid-template-columns: 1fr; text-align: left; }
