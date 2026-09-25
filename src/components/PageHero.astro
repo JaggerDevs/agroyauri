@@ -1,6 +1,5 @@
 ---
 import Img from "./Img.astro";
-import Deco from "./Deco.astro";
 interface Props {
   eyebrow: string;
   /** Admite <span class="lime">…</span> */
@@ -14,8 +13,6 @@ const { eyebrow, title, lead, image = "/media/site/jardin-casa.jpg", crumbs, ima
 ---
 <section class="page-hero">
   <Img src={image} alt="" class="hero-bg" widths={[640, 960, 1440]} sizes="100vw" loading="eager" fetchpriority="high" style={`object-position:${imagePosition}`} />
-  <Deco n={2} class="leaf-hero-l" />
-  <Deco n={5} class="leaf-hero-r" width={160} />
   <div class="container page-hero-inner">
     <p class="eyebrow eyebrow-light">{eyebrow}</p>
     <h1 set:html={title} />
