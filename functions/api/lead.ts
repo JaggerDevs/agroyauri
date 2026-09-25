@@ -121,7 +121,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const errors: string[] = [];
   const name = str(b.name, 120);
   const phone = str(b.phone, 30);
-  const email = str(b.email, 160)?.toLowerCase() ?? null;
+  const email = str(b.email, 160)?.toLowerCase() ?? null; // opcional (formulario corto)
   const district = str(b.district, 120);
   const serviceId = str(b.service_id, 36);
   const serviceLabel = str(b.service_label, 120);
@@ -130,8 +130,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
   if (!name || name.length < 2) errors.push("nombre");
   if (!phone || !/^[0-9+()\s-]{6,30}$/.test(phone) || phone.replace(/\D/g, "").length < 6) errors.push("teléfono");
-  if (!email || !EMAIL.test(email)) errors.push("correo");
-  if (!district) errors.push("distrito");
+  if (email && !EMAIL.test(email)) errors.push("correo");
   if (!serviceLabel && !serviceId) errors.push("servicio");
   if (area !== null && (!Number.isFinite(area) || area <= 0 || area >= 100_000_000)) errors.push("área");
   if (errors.length) return json(422, { error: `Revisa: ${errors.join(", ")}.` });
@@ -151,7 +150,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   // Límite anti-abuso: máx. 3 solicitudes del mismo correo o teléfono en 10 minutos.
   const since = new Date(Date.now() - 10 * 60 * 1000).toISOString();
   const q = (v: string) => `"${v.replace(/["\\]/g, "")}"`;
-  const orFilter = encodeURIComponent(`(email.eq.${q(email!)},phone.eq.${q(phone!)})`);
+  const orFilter = encodeURIComponent(email ? `(email.eq.${q(email)},phone.eq.${q(phone!)})` : `(phone.eq.${q(phone!)})`);
   const recent = await fetch(`${env.SUPABASE_URL}/rest/v1/leads?select=id&site_id=eq.${site}&created_at=gte.${since}&or=${orFilter}&limit=3`, { headers });
   if (recent.ok) {
     const rows = (await recent.json()) as unknown[];

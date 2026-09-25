@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import logo from "../assets/deco/logo_verde.png";
+import logo from "../assets/deco/logo_claro.png";
 import type { Settings } from "../lib/data";
 
 interface Props { settings: Settings }
@@ -26,9 +26,8 @@ const items = [
       ))}
     </nav>
     <div class="nav-actions">
-      <a href="/#contacto" class="btn btn-dark btn-sm">
-        <svg viewBox="0 0 24 24" class="ico"><use href="#i-wa" /></svg>
-        Cotiza ahora
+      <a href="/#contacto" class="btn btn-green btn-sm">
+        Solicita una cotización
         <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg>
       </a>
       <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainNav">

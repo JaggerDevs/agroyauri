@@ -78,7 +78,7 @@ POSTGREST_BIN=/ruta/postgrest node scripts/local-supabase.mjs   # imprime claves
 # .env  → PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 + PUBLIC_SUPABASE_ANON_KEY local
 # .dev.vars → PUBLIC_SITE_SLUG=agroyauri, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY local, CF_DEPLOY_HOOK_URL=http://127.0.0.1:54321/__deploy-hook
 npm run build && npx wrangler pages dev dist --port 8788
-node scripts/e2e-leads.mjs    # 24 pruebas: formulario, site_id del servidor, origen, UTM, antispam
+node scripts/e2e-leads.mjs    # 27 pruebas: formulario corto, site_id del servidor, origen, UTM, antispam
 node scripts/e2e-admin.mjs    # 71 pruebas: panel, CRM, CMS y aislamiento admin / otra web / super_admin
 ```
 

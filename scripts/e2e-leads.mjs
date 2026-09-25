@@ -42,14 +42,12 @@ await page.click('form.lead-form button[type="submit"]');
 const errMsg = await page.$eval("form.lead-form .form-status", (e) => e.textContent);
 expect("validación del lado del cliente", /campos obligatorios/.test(errMsg), errMsg);
 
-// 4) Envío correcto
+// 4) Envío correcto (formulario corto: nombre, teléfono, servicio y mensaje opcional)
+const formFields = await page.$$eval("form.lead-form .form-grid :is(input, select, textarea)", (els) => els.map((e) => e.name).join(","));
+expect("formulario corto: nombre, teléfono, servicio, mensaje", formFields === "name,phone,service,message", formFields);
 await page.type('input[name="name"]', "Cliente E2E");
-await page.type('input[name="email"]', "cliente.e2e@example.com");
 await page.type('input[name="phone"]', "987 654 321");
-await page.type('input[name="district"]', "La Molina");
-await page.type('input[name="company"]', "Condominio Prueba");
 await page.select('select[name="service"]', await page.$eval('select[name="service"] option:nth-child(4)', (o) => o.value));
-await page.type('input[name="area_m2"]', "350");
 await page.type('textarea[name="message"]', "Necesitamos riego para 350 m².");
 await new Promise((r) => setTimeout(r, 2600)); // un humano tarda más que el umbral antispam
 await page.click('form.lead-form button[type="submit"]');
@@ -60,7 +58,7 @@ expect("mensaje de éxito tras enviar", /Gracias/.test(okMsg), okMsg);
 const all = await leads();
 const lead = all[0];
 expect("se creó exactamente 1 lead", all.length === before + 1, `${before} → ${all.length}`);
-expect("lead: datos guardados", lead?.name === "Cliente E2E" && lead?.email === "cliente.e2e@example.com" && Number(lead?.area_m2) === 350, JSON.stringify(lead));
+expect("lead: datos guardados", lead?.name === "Cliente E2E" && lead?.phone === "987 654 321" && lead?.email === null && /350/.test(lead?.message ?? ""), JSON.stringify(lead));
 expect("lead: servicio (service_id + etiqueta)", !!lead?.service_id && !!lead?.service_label, `${lead?.service_id} ${lead?.service_label}`);
 expect("lead: UTM guardados", lead?.utm_source === "google" && lead?.utm_medium === "cpc" && lead?.utm_campaign === "riego-lima" && lead?.utm_term === "riego tecnificado", JSON.stringify(lead));
 expect("lead: landing_page = página de entrada", lead?.landing_page === "/servicios/riego-tecnificado-lima", lead?.landing_page);
@@ -97,6 +95,12 @@ r = await post(valid, { Origin: "https://sitio-malicioso.com" });
 expect("otro origen rechazado (403)", r.status === 403, r.status);
 r = await fetch(`${BASE}/api/lead`, { method: "POST", headers: { "Content-Type": "text/plain" }, body: "x" });
 expect("formato no JSON rechazado (415)", r.status === 415, r.status);
+const short = { name: "Sin correo", phone: "977000111", service_label: "Paisajismo", elapsed_ms: 8000 };
+r = await post(short);
+expect("sin correo ni distrito se acepta (201)", r.status === 201, r.status);
+await post(short); await post(short);
+r = await post(short);
+expect("límite de repetición por teléfono sin correo (429)", r.status === 429, r.status);
 for (let i = 0; i < 3; i++) await post({ ...valid, email: "repetido@example.com" });
 r = await post({ ...valid, email: "repetido@example.com" });
 expect("límite de repetición por correo (429)", r.status === 429, r.status);

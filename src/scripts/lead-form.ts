@@ -77,13 +77,9 @@ function setup(form: HTMLFormElement) {
     const a = attribution();
     return {
       name: f.name.value.trim(),
-      company: f.company.value.trim(),
       phone: f.phone.value.trim(),
-      email: f.email.value.trim(),
       service_id: sel.value,
       service_label: opt?.dataset.label ?? "",
-      district: f.district.value.trim(),
-      area_m2: f.area_m2.value,
       message: f.message.value.trim(),
       landing_page: a.landing_page || location.pathname,
       page: location.pathname,
@@ -153,12 +149,8 @@ function setup(form: HTMLFormElement) {
       "Hola AGROYAURI SAC, quisiera solicitar una cotización:",
       "",
       `• Nombre: ${p.name}`,
-      p.company && `• Empresa: ${p.company}`,
       `• Teléfono: ${p.phone}`,
-      `• Correo: ${p.email}`,
       `• Servicio: ${p.service_label}`,
-      `• Distrito / Ubicación: ${p.district}`,
-      p.area_m2 && `• Área aproximada: ${p.area_m2} m²`,
       p.message && `• Mensaje: ${p.message}`,
     ].filter(Boolean);
     // Se abre de inmediato (evita bloqueadores de ventanas); el lead se registra en segundo plano.
