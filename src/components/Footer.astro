@@ -1,44 +1,77 @@
 ---
 import { Image } from "astro:assets";
-import logo from "../assets/deco/logo_blanco.png";
+import logo from "../assets/deco/logo_claro.png";
 import type { Settings } from "../lib/data";
 import { getSiteData } from "../lib/data";
+import { waGeneralText } from "../lib/site";
 
 interface Props { settings: Settings }
 const { settings } = Astro.props;
 const { services } = await getSiteData();
 const c = settings.contact;
+const social = settings.social as Record<string, string | undefined>;
+// Solo se muestran las redes con URL real (se editan en el panel → Configuración).
 const socials = [
   { key: "facebook", label: "Facebook", icon: "i-fb" },
   { key: "instagram", label: "Instagram", icon: "i-ig" },
+  { key: "tiktok", label: "TikTok", icon: "i-tt" },
+  { key: "youtube", label: "YouTube", icon: "i-yt" },
   { key: "linkedin", label: "LinkedIn", icon: "i-in" },
-].filter((s) => (settings.social as Record<string, string | undefined>)[s.key]);
+].filter((s) => social[s.key]);
+const links = [
+  { href: "/", label: "Inicio" },
+  { href: "/nosotros", label: "Nosotros" },
+  { href: "/servicios", label: "Servicios" },
+  { href: "/proyectos", label: "Proyectos" },
+  { href: "/productos", label: "Productos" },
+  { href: "/blog", label: "Blog" },
+  { href: "/contacto", label: "Contacto" },
+];
+const wa = (p: string) => `https://wa.me/51${p.replace(/\D/g, "")}?text=${encodeURIComponent(waGeneralText)}`;
 const year = new Date().getFullYear();
 ---
 <footer class="site-footer">
   <div class="container footer-grid">
     <div class="footer-brand">
-      <a href="/" class="brand brand-light"><Image src={logo} alt="" width={60} height={52} densities={[1, 2]} format="webp" /><span>AGROYAURI SAC</span></a>
-      <p>{c.tagline}</p>
-    </div>
-    <div class="footer-links">
-      <nav aria-label="Enlaces del pie">
-        <a href="/">Inicio</a><a href="/nosotros">Nosotros</a><a href="/servicios">Servicios</a><a href="/proyectos">Proyectos</a><a href="/productos">Productos</a><a href="/blog">Blog</a><a href="/contacto">Contacto</a>
-      </nav>
-      <p class="footer-services">
-        {services.map((s, i) => (<>{i > 0 && " · "}<a href={`/servicios/${s.slug}`}>{s.name}</a></>))}
-      </p>
-    </div>
-    <div class="footer-meta">
+      <a href="/" class="brand brand-light"><Image src={logo} alt="" width={52} height={45} densities={[1, 2]} format="webp" /><span>AGROYAURI SAC</span></a>
+      <p class="footer-tagline">{c.tagline}</p>
+      <p class="footer-about">Paisajismo, mantenimiento de áreas verdes, riego tecnificado, control de plagas y saneamiento ambiental en Lima.</p>
       {socials.length > 0 && (
-        <div class="socials">
+        <div class="socials" aria-label="Redes sociales">
           {socials.map((s) => (
-            <a href={(settings.social as Record<string, string>)[s.key]} target="_blank" rel="noopener" aria-label={s.label}><svg viewBox="0 0 24 24"><use href={`#${s.icon}`} /></svg></a>
+            <a href={social[s.key]} target="_blank" rel="noopener" aria-label={`${s.label} de AGROYAURI SAC`} title={s.label}><svg viewBox="0 0 24 24" aria-hidden="true"><use href={`#${s.icon}`} /></svg></a>
           ))}
         </div>
       )}
-      <p>{c.phones[0]} · {c.email}</p>
-      <p>© {year} {c.legal_name.replace(/\.$/, "")}. Todos los derechos reservados.<br />{c.city} - {c.region} &nbsp;|&nbsp; RUC: {c.ruc}</p>
+    </div>
+
+    <nav class="footer-col" aria-label="Enlaces del pie">
+      <p class="footer-title">Empresa</p>
+      <ul>{links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </nav>
+
+    <div class="footer-col">
+      <p class="footer-title">Servicios</p>
+      <ul>{services.map((s) => <li><a href={`/servicios/${s.slug}`}>{s.name}</a></li>)}</ul>
+    </div>
+
+    <div class="footer-col footer-contact">
+      <p class="footer-title">Contacto</p>
+      <ul>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa" /></svg>
+          <span>{c.phones.map((p, i) => (<>{i > 0 && " / "}<a href={wa(p)} target="_blank" rel="noopener" data-wa>{p}</a></>))}</span>
+        </li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail" /></svg><a href={`mailto:${c.email}`}>{c.email}</a></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pin" /></svg><span>{c.city} - {c.region}, Perú</span></li>
+      </ul>
+      <a href="/#contacto" class="btn btn-green btn-sm footer-cta">Solicita una cotización <svg viewBox="0 0 24 24" class="ico"><use href="#i-arrow" /></svg></a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container footer-bottom-inner">
+      <p>© {year} {c.legal_name.replace(/\.$/, "")}. Todos los derechos reservados.</p>
+      <p>RUC {c.ruc} &nbsp;·&nbsp; {c.city} - {c.region}</p>
     </div>
   </div>
 </footer>

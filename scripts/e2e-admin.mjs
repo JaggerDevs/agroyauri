@@ -259,6 +259,7 @@ expect("cancelar no borra", (await api("products?select=id&slug=eq.arbustos-orna
 // ---------- configuración ----------
 await page.goto(`${BASE}/admin/settings`, { waitUntil: "load" });
 await page.waitForSelector('input[type="url"]');
+await page.$eval('input[placeholder^="https://facebook"]', (el) => (el.value = ""));
 await page.type('input[placeholder^="https://facebook"]', "https://facebook.com/agroyauri-prueba");
 await clearToasts();
 await page.click('.form-card button[type="submit"]');
