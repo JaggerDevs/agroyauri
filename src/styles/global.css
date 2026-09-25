@@ -178,7 +178,7 @@ body:has(.notfound) .site-header { background: var(--forest-800); }
 
 /* SERVICIOS */
 .services {
-  padding-top: 26px; padding-bottom: 50px;
+  padding-top: 26px; padding-bottom: 28px;
   /* El fondo se funde con el crema arriba (ola del hero) y abajo (proyectos): sin cortes de color */
   background: linear-gradient(var(--cream) 0, rgba(251,250,244,.8) 140px, rgba(251,250,244,.8) calc(100% - 140px), var(--cream) 100%), var(--cream) url("../assets/bg/claro-hojas-1600.webp") center / cover no-repeat;
 }
@@ -210,7 +210,7 @@ body:has(.notfound) .site-header { background: var(--forest-800); }
 .svc-go { display: none; }
 
 /* PROYECTOS */
-.projects { padding-top: 40px; padding-bottom: 44px; background: var(--cream); }
+.projects { padding-top: 20px; padding-bottom: 44px; background: var(--cream); }
 .leaf-prj-l { left: -50px; top: 58%; width: 110px; transform: rotate(-20deg); }
 .leaf-prj-r { right: -40px; top: -40px; width: 110px; transform: rotate(60deg); }
 .carousel { position: relative; }
@@ -528,6 +528,8 @@ body:has(section.contact) .footer-grid { grid-template-columns: 1.5fr .8fr 1.2fr
 @media (max-width: 760px) {
   .container { padding-inline: 18px; }
   .section { padding: 48px 0; }
+  .section.services { padding-top: 24px; padding-bottom: 22px; }
+  .section.projects { padding-top: 14px; }
   .brand { font-size: 16px; white-space: nowrap; gap: 6px; }
   .brand img { width: 34px; }
   .nav-actions .btn-sm { padding: 8px 14px; font-size: 13px; }
@@ -546,10 +548,10 @@ body:has(section.contact) .footer-grid { grid-template-columns: 1.5fr .8fr 1.2fr
       linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,0) 120px),
       linear-gradient(rgba(0,0,0,.32), rgba(0,0,0,.32));
   }
-  .hero h1 { font-size: 34px; margin: 0 0 12px; }
-  .hero-text { font-size: 14px; line-height: 1.5; max-width: 330px; }
+  .hero h1 { font-size: clamp(32px, 9.4vw, 42px); margin: 0 0 14px; }
+  .hero-text { font-size: clamp(14px, 3.8vw, 16.5px); line-height: 1.5; max-width: 92%; }
   .hero-ctas { flex-direction: column; align-items: center; gap: 12px; margin-top: 22px; }
-  .hero-ctas .btn { padding: 12px 26px; font-size: 14.5px; min-width: 230px; justify-content: center; }
+  .hero-ctas .btn { padding: 13px 26px; font-size: clamp(14.5px, 3.9vw, 16px); min-width: min(62vw, 270px); justify-content: center; }
   .leaf-hero-l { width: 110px; left: -50px; }
   .leaf-hero-r { width: 80px; }
   /* Servicios del inicio en móvil: 2 columnas, foto completa; ícono de vidrio arriba y flecha a la izquierda del título */
